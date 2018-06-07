@@ -1,0 +1,23 @@
+{
+  "build": {
+    "tasks_filename": "spatialos.java.build.json",
+    "generated_build_scripts_type": "java"
+  },
+  "bridge": {
+    "worker_attribute_set": {
+      "attributes": [
+        "tiled_worker_seeder"
+      ]
+    },
+    "entity_interest": {
+      "range_entity_interest": {
+        "radius": 0
+      }
+    },
+    "streaming_query": [],
+    "component_delivery": {
+      "default": "RELIABLE_ORDERED",
+      "checkout_all_initially": true
+    }
+  }
+}

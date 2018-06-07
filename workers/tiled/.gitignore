@@ -1,0 +1,7 @@
+
+# Generated Java Worker SDK code
+worker-sdk/generated/
+
+# Gradle
+.gradle/
+
