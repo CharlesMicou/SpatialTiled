@@ -1,0 +1,8 @@
+{
+    "name": "alpha_aspen_network_901",
+    "project_version": "1.0.0",
+    "sdk_version": "13.0.1",
+    "dependencies": [
+        {"name": "standard_library", "version": "13.0.1"}
+    ]
+}
