@@ -1,0 +1,16 @@
+package tiled.resource;
+
+// A description of a resource to load tiles or tile sets from. 
+type TileResource {
+    uint32 resource_id = 1;
+}
+
+// A resource that is expected to already exist locally.
+type LocalResource {
+    // todo
+}
+
+// A resource that can be retrieved from a remote source.
+type RemoteResource {
+    // todo
+}

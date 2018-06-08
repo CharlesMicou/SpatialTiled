@@ -1,0 +1,52 @@
+package tiled.map;
+import "tiled/resource.schema";
+
+component MapChunk {
+    id = 3000;
+
+    // Properties of this map chunk.
+    MapChunkProperties properties = 1;
+
+    // A map from tile resource id to tile resource.
+    map<uint32, tiled.resource.TileResource> required_resources = 2;
+
+    // The layer data for this map chunk.
+    // The ordering of this list describes the ordering of layers.
+    // By convention, the first layer is rendered at the bottom.
+    list<TileLayer> tile_layers = 3;
+}
+
+type MapChunkProperties {
+    // The name of the map this map chunk derives from.
+    string name = 1;
+
+    // The dimensions the chunk in tiles.
+    uint32 width = 2;
+    uint32 height = 3;
+
+    // The dimensions of a tile in SpatialOS world units.
+    float tile_x_dimension = 4;
+    float tile_y_dimension = 5;
+}
+
+type TileLayer {
+    // The name of this layer.
+    string name = 1;
+
+    // The contents of this tile layer.
+    // Example of ordering a 2 row 3 column layer:
+    // 0 1 2
+    // 3 4 5
+    list<TileId> tiles = 2;
+}
+
+
+// A unique identifier for a single tile.
+type TileId {
+    // The resource this tile comes from.
+    // A resource id of 0 is special: it denotes the an empty tile.
+    uint32 resource_id = 1;
+
+    // The id of the tile within the resource.
+    uint32 inner_id = 2;
+}
