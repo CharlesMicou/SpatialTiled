@@ -26,7 +26,7 @@ type MapChunkProperties {
 
     // The dimensions of a tile in SpatialOS world units.
     float tile_x_dimension = 4;
-    float tile_y_dimension = 5;
+    float tile_z_dimension = 5;
 }
 
 type TileLayer {

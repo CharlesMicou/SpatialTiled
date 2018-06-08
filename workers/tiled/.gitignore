@@ -5,3 +5,5 @@ worker-sdk/generated/
 # Gradle
 .gradle/
 
+# Generated Snapshots for testing
+*.snapshot
