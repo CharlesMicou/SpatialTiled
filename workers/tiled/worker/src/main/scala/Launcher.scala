@@ -1,7 +1,6 @@
-package tiled.tiled;
-
 import java.util
 
+import generator.{SnapshotGenerator, TileResourceDirectory}
 import improbable._
 import improbable.worker.{Entity, EntityId, SnapshotOutputStream}
 import tiled.map._
@@ -9,12 +8,16 @@ import tiled.resource.TileResource
 
 import scala.collection.JavaConversions._
 
-object SnapshotGenerator extends App {
-    val path = System.getProperty("user.dir") + "/test.snapshot"
+object Launcher extends App {
+    /*val path = System.getProperty("user.dir") + "/test.snapshot"
     System.out.println(s"Outputting snapshot to $path")
     val snapshotOutputStream = new SnapshotOutputStream(path)
     snapshotOutputStream.writeEntity(new EntityId(1337), makeTestEntity)
-    snapshotOutputStream.close()
+    snapshotOutputStream.close()*/
+
+    val path = getClass.getClassLoader.getResource("test").getFile
+    System.out.println(s"Loading from $path")
+    val s = new SnapshotGenerator(path)
     System.exit(0)
 
     def makeTestEntity: Entity = {

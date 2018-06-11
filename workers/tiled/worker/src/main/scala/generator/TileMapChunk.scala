@@ -2,9 +2,9 @@ package generator
 
 import tiled.map.{MapChunkData, MapChunkProperties, TileLayer}
 
-class MapChunk(mapName: String,
-               width: Int,
-               height: Int) {
+class TileMapChunk(mapName: String,
+                   width: Int,
+                   height: Int) {
 
     def toComponent: MapChunkData = {
         val properties = MapChunkProperties.create()
