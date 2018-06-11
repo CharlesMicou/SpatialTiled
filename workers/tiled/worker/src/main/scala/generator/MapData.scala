@@ -2,13 +2,14 @@ package generator
 
 import java.io.File
 
+import improbable.Coordinates
 import tiled.map.{MapChunk, TileId}
 
 import scala.xml.XML
 
 case class MapLayer(name: String, id: Int, data: Seq[TileId])
 
-class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer]) {
+class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer], origin: Coordinates) {
 
     def toMapChunks: Seq[MapChunk] = ???
 
@@ -47,6 +48,8 @@ object MapData {
           })
 
         val mapName = file.getName
-        new MapData(mapName, width, height, layers)
+
+        // todo: coordinates
+        new MapData(mapName, width, height, layers, Coordinates.create())
     }
 }
