@@ -13,7 +13,7 @@ class TileResourceDirectory(tilesetNameToResources: Map[String, TileResource]) {
         } else {
             val (_, gidBelow) = firstGidToTilesetName.toSeq.partition(f => f._1 > gid)
             val resource = gidBelow.maxBy(f => f._1)
-            getTileId(resource._2, resource._1 - gid)
+            getTileId(resource._2, gid - resource._1)
         }
     }
 
@@ -24,6 +24,10 @@ class TileResourceDirectory(tilesetNameToResources: Map[String, TileResource]) {
             case None =>
                 throw new RuntimeException(s"$tilesetFile is not a known tileset in the resource directory")
         }
+    }
+
+    def resources: Seq[TileResource] = {
+        tilesetNameToResources.values.toSeq
     }
 
     private def makeTileId(resourceId: Int, innerId: Int): TileId = {

@@ -4,14 +4,28 @@ import java.io.File
 
 import improbable.Coordinates
 import tiled.map.{MapChunk, TileId}
+import CoordinatesHelper._
 
 import scala.xml.XML
 
-case class MapLayer(name: String, id: Int, data: Seq[TileId])
+// Data is (row)(column) indexed
+case class MapLayer(name: String, id: Int, data: Array[Array[TileId]])
 
 class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer], origin: Coordinates) {
+    def toMapChunks(maxChunkWidth: Int, maxChunkHeight: Int): Seq[MapChunk] = {
+        val chunkX = 1
+        val chunkZ = 1
+        for {
+            i <- 0 until maxChunkWidth
+            j <- 0 until maxChunkHeight
+            if chunkX * maxChunkWidth + i < width
+            if chunkZ * maxChunkWidth + j < height
+        } yield {
+            // todo fix this
 
-    def toMapChunks: Seq[MapChunk] = ???
+        }
+        ???
+    }
 
     def writeToDir(outputDir: String): Unit = {
         // todo
@@ -40,16 +54,17 @@ object MapData {
           .map(layer => {
               val id = layer.attribute("id").get.text.toInt
               val name = layer.attribute("name").get.text
-              val data = (layer \ "data").text.split("\n").flatMap(s => s.split(","))
-                .filter(s => !s.equals(""))
-                .map(csvEntry => tileResourceDirectory.tileIdFromMapFileMapping(
-                    csvEntry.toInt, localResourceMapping))
+              val data = (layer \ "data").text.split("\n").map { s =>
+                  s.split(",").filter(a => !a.trim.equals("")).map { csvEntry =>
+                      tileResourceDirectory.tileIdFromMapFileMapping(csvEntry.toInt, localResourceMapping)
+                  }
+              }
               MapLayer(name, id, data)
           })
 
         val mapName = file.getName
 
         // todo: coordinates
-        new MapData(mapName, width, height, layers, Coordinates.create())
+        new MapData(mapName, width, height, layers, makeCoordinates(0, 0, 0))
     }
 }

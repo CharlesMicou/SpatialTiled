@@ -38,6 +38,9 @@ type TileLayer {
     // 0 1 2
     // 3 4 5
     list<TileId> tiles = 2;
+
+    // The ID of this tile layer.
+    uint32 id = 3;
 }
 
 
