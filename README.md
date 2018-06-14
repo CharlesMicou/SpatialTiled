@@ -29,3 +29,9 @@ my_world/
 ----forest_tiles.png
 ----lake_tiles.png
 ```
+
+## Todo List
+* Resources: should be more than an ID
+* Coordinate offset per map
+* Multiple map support
+* Snapshot to .tmx conversion
