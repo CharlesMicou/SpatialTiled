@@ -4,7 +4,7 @@ import java.io.File
 
 import improbable.Coordinates
 import tiled.map.{MapChunk, TileId}
-import CoordinatesHelper._
+import common.CoordinatesHelper._
 
 import scala.xml.XML
 
@@ -13,16 +13,24 @@ case class MapLayer(name: String, id: Int, data: Array[Array[TileId]])
 
 class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer], origin: Coordinates) {
     def toMapChunks(maxChunkWidth: Int, maxChunkHeight: Int): Seq[MapChunk] = {
-        val chunkX = 1
-        val chunkZ = 1
-        for {
-            i <- 0 until maxChunkWidth
-            j <- 0 until maxChunkHeight
-            if chunkX * maxChunkWidth + i < width
-            if chunkZ * maxChunkWidth + j < height
-        } yield {
-            // todo fix this
-
+        layers.map {
+            layer =>
+                for {
+                    chunkX <- 0.until(width / maxChunkWidth)
+                    chunkZ <- 0.until(height / maxChunkHeight)
+                } yield {
+                    for {
+                        j <- 0 until maxChunkHeight
+                        if chunkZ * maxChunkWidth + j < height
+                    } yield {
+                        for {
+                            i <- 0 until maxChunkWidth
+                            if chunkX * maxChunkWidth + i < width
+                        } yield {
+                            layer.data(chunkZ + j)(chunkX + i)
+                        }
+                    }
+                }
         }
         ???
     }

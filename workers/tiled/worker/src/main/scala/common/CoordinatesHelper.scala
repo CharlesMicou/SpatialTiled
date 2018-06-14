@@ -1,4 +1,4 @@
-package generator
+package common
 
 import improbable.Coordinates
 
