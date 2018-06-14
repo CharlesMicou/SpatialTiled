@@ -2,6 +2,7 @@ package generator
 
 import java.util
 
+import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import improbable._
 import improbable.worker.Entity
 import tiled.map.{MapChunk, MapChunkData, MapChunkProperties, TileLayer}
@@ -10,7 +11,7 @@ import tiled.resource.TileResource
 import scala.collection.JavaConversions._
 
 class MapChunkEntity(name: String,
-                     origin: Coordinates,
+                     coordinates: Coordinates,
                      width: Int,
                      height: Int,
                      mapLayers: Seq[MapLayer],
@@ -21,7 +22,7 @@ class MapChunkEntity(name: String,
         entity.add(Metadata.COMPONENT, new MetadataData("MapChunk"))
         entity.add(EntityAcl.COMPONENT, makeEntityAcl)
         entity.add(Persistence.COMPONENT, new PersistenceData())
-        entity.add(Position.COMPONENT, new PositionData(origin))
+        entity.add(Position.COMPONENT, new PositionData(coordinates))
         val mapChunkData = new MapChunkData(
             makeMapProperties, makeRequiredResources, makeTileLayers)
         entity.add(MapChunk.COMPONENT, mapChunkData)
@@ -39,8 +40,8 @@ class MapChunkEntity(name: String,
         mapChunkProperties.setHeight(height)
         mapChunkProperties.setWidth(width)
         mapChunkProperties.setName(name)
-        mapChunkProperties.setTileXDimension(1)
-        mapChunkProperties.setTileZDimension(1)
+        mapChunkProperties.setTileXDimension(TILE_X_DIMENSION)
+        mapChunkProperties.setTileZDimension(TILE_Z_DIMENSION)
         mapChunkProperties
     }
 
@@ -48,7 +49,7 @@ class MapChunkEntity(name: String,
         mapLayers.map { layer =>
             val tileLayer = TileLayer.create()
             tileLayer.setName(layer.name)
-            tileLayer.setTiles(layer.data.flatten.toSeq)
+            tileLayer.setTiles(layer.tileData.toRaw)
             tileLayer.setId(layer.id)
             tileLayer
         }
@@ -58,7 +59,7 @@ class MapChunkEntity(name: String,
         tileResourceDirectory.resources
           .filter(resource => {
               mapLayers.exists(mapLayer => {
-                  mapLayer.data.flatten.exists(tileId =>
+                  mapLayer.tileData.toRaw.exists(tileId =>
                       tileId.getResourceId == resource.getResourceId)
               })
           })

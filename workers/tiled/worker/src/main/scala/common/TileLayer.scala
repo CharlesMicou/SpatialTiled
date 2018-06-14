@@ -3,20 +3,20 @@ package common
 import tiled.map.TileId
 
 class TileLayer(data: Map[(Int, Int), TileId], width: Int, height: Int) {
-    def subSection(fromX: Int, fromZ: Int, toX: Int, toZ: Int): TileLayer = {
+    def subSection(fromX: Int, fromZ: Int, untilX: Int, untilZ: Int): TileLayer = {
         assert(fromX >= 0, s"Supplied a fromX $fromX out of bounds")
         assert(fromZ >= 0, s"Supplied a fromZ $fromZ out of bounds")
-        assert(toX <= width, s"Supplied a toX $toX out of bounds $width")
-        assert(toZ <= height, s"Supplied a toZ $toZ out of bounds $height")
+        assert(untilX <= width, s"Supplied a toX $untilX out of bounds $width")
+        assert(untilZ <= height, s"Supplied a toZ $untilZ out of bounds $height")
 
         val mappedData = for {
-            i <- fromX to toX
-            j <- fromZ to toZ
+            i <- fromX until untilX
+            j <- fromZ until untilZ
         } yield {
             (i - fromX, j - fromZ) -> data(i, j)
         }
 
-        new TileLayer(mappedData.toMap, toX - fromX, toZ - fromZ)
+        new TileLayer(mappedData.toMap, untilX - fromX, untilZ - fromZ)
     }
 
     def toRaw: Seq[TileId] = {
@@ -49,6 +49,6 @@ object TileLayer {
         val width = data.last.length
         data.foreach(row =>
             assert(row.length == width, "fromRowsAndCols requires rectangular arrays"))
-        fromRaw(data.flatten, width, height)
+        fromRaw(data.flatten.toSeq, width, height)
     }
 }

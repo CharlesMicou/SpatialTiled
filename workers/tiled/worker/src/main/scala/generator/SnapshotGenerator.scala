@@ -2,15 +2,25 @@ package generator
 
 import java.io.File
 
+import improbable.worker.{EntityId, SnapshotOutputStream}
+
 class SnapshotGenerator(resourceDir: String) {
-    validatePath(resourceDir)
-    val resourceDirectory = TileResourceDirectory.parseResourceDirectory(
+    validateResourceFolder(resourceDir)
+    val resourceDirectory: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
         resourceDir + s"/${SnapshotGenerator.tilesetFolder}")
 
-    MapData.fromFile(new File(resourceDir + "/" + SnapshotGenerator.mapFolder + "/map1.tmx"), resourceDirectory)
+    val mapData: MapData = MapData.fromFile(
+        new File(resourceDir + "/" + SnapshotGenerator.mapFolder + "/map1.tmx"), resourceDirectory)
 
+    def writeSnapshot(path: String): Unit = {
+        val snapshotOutputStream = new SnapshotOutputStream(path)
+        mapData.toMapChunks(5, 5, resourceDirectory)
+          .zip(Stream.from(1337)).foreach(
+            f => snapshotOutputStream.writeEntity(new EntityId(f._2), f._1.toEntity))
+        snapshotOutputStream.close()
+    }
 
-    private def validatePath(path: String): Unit = {
+    private def validateResourceFolder(path: String): Unit = {
         val dir = new File(path)
         if (!dir.exists() || !dir.isDirectory) {
             throw new RuntimeException(s"$path is not a folder or does not exist.")
