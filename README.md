@@ -49,5 +49,7 @@ and open `SpatialTiled/workers/tiled`.
 To run from within IntelliJ instead of through `spatial build` and `spatial local worker launch`, set up a run configuration with the main class `Launcher` and the arguments: `toSnapshot <path/to/SpatialTiled>`.
 
 ## Todo List
-* Resources: should be more than an ID
+* Resources: implement remote resources
 * Snapshot to .tmx conversion
+* Layer properties
+* Object support

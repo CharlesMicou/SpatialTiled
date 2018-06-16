@@ -3,7 +3,9 @@ package generator
 import java.io.File
 
 import tiled.map.TileId
-import tiled.resource.TileResource
+import tiled.resource.{LocalResource, TileResource}
+
+import scala.xml.XML
 
 class TileResourceDirectory(tilesetNameToResources: Map[String, TileResource]) {
 
@@ -51,7 +53,13 @@ object TileResourceDirectory {
         if (file.isFile && file.getName.endsWith(".tsx")) {
             val tileResource = TileResource.create()
             tileResource.setResourceId(resourceId)
-            // Todo: parse relevant data from the resource
+            // Todo: decide between local and remote resources.
+            // For now, just assume resources are local.
+            val tilesetFileName = file.getName.split("/").last
+            val xml = (XML.loadFile(file) \\ "image").map(
+                node => node.attribute("source").get.text.split("/").last)
+            tileResource.setLocalResource(
+                new LocalResource(tilesetFileName, xml.headOption.getOrElse("")))
             Option((file.getName, tileResource))
         } else {
             Option.empty

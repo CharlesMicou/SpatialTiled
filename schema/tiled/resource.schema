@@ -2,15 +2,35 @@ package tiled.resource;
 
 // A description of a resource to load tiles or tile sets from. 
 type TileResource {
+    // A unique idendifier for this resource.
     uint32 resource_id = 1;
+
+    // The resource is expected to exist locally.
+    LocalResource local_resource = 2;
+
+    // The resoure should be retrieved from a remote source.
+    RemoteResource remote_resource = 3;
 }
 
 // A resource that is expected to already exist locally.
 type LocalResource {
-    // todo
+    string tileset_file = 1;
+    string source_image = 2;
 }
 
 // A resource that can be retrieved from a remote source.
 type RemoteResource {
-    // todo
+    // A reference to an entity id that contains the required resource in
+    // a GzippedResource component.
+    uint64 resource_entity_id = 1;
+}
+
+component GzippedResource {
+    id = 3002;
+
+    // The source image of the tileset, compressed with gzip.
+    bytes gzipped_source_image_png = 1;
+
+    // The .tsx tileset definition, compressed with gzip.
+    bytes gzipped_tileset_file =  2;
 }

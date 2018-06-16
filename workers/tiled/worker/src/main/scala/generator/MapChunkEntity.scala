@@ -1,8 +1,5 @@
 package generator
 
-import java.util
-
-import common.MagicConstants
 import common.MagicConstants.{READ_ATTRIBUTES, TILE_X_DIMENSION, TILE_Z_DIMENSION, WRITE_ATTRIBUTE}
 import improbable._
 import improbable.worker.Entity
