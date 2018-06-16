@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="48" height="27" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="3">
  <properties>
+  <property name="coordinate_offset" value="-48.0, 0.0, 27.0"/>
   <property name="custom_map_property" value="this needs figuring out"/>
  </properties>
  <tileset firstgid="1" source="../tilesets/tileset1.tsx"/>

@@ -7,7 +7,7 @@ import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import common.CoordinatesHelper._
 import common.TileLayer
 
-import scala.xml.XML
+import scala.xml.{Elem, XML}
 
 case class MapLayer(name: String, id: Int, tileData: TileLayer)
 
@@ -58,9 +58,16 @@ object MapData {
 
     def fromFile(file: File, tileResourceDirectory: TileResourceDirectory): MapData = {
         assert(file.getName.endsWith(".tmx"), s"File $file is not a .tmx file")
+        val mapName = file.getName
         val xml = XML.loadFile(file)
         val width = xml.attribute("width").get.text.toInt
         val height = xml.attribute("height").get.text.toInt
+        val mapOffset = mapOffsetCoordinates(xml)
+
+        // Sanity check orientation
+        assert(xml.attribute("renderorder").get.text.equals("right-down"),
+            "Tiled Map render order must be set to right-down.")
+
         val localResourceMapping = (xml \ "tileset")
           .map(tileset => {
               val firstGid = tileset.attribute("firstgid").get.text.toInt
@@ -87,9 +94,16 @@ object MapData {
               MapLayer(name, id, TileLayer.fromRowsAndCols(data))
           })
 
-        val mapName = file.getName
 
-        // todo: coordinates
-        new MapData(mapName, width, height, layers, makeCoordinates(0, 0, 0))
+        new MapData(mapName, width, height, layers, mapOffset)
+    }
+
+    private def mapOffsetCoordinates(xml: Elem): Coordinates = {
+        val coordsField = (xml \ "properties" \ "property")
+          .filter(property => property.attribute("name").get.text.equals("coordinate_offset"))
+          .map(property => property.attribute("value").get.text)
+        assert(coordsField.length == 1, "Maps require a coordinate_offset property in the format 1.0, 2.0, 3.0")
+        val coordsVals = coordsField.head.split(",").map(s => s.trim.toDouble)
+        makeCoordinates(coordsVals(0), coordsVals(1), coordsVals(2))
     }
 }
