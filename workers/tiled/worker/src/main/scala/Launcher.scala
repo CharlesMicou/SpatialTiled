@@ -22,7 +22,7 @@ object Launcher extends App {
     private def parseArgs: Any = {
         args(0) match {
             case "toSnapshot" =>
-                val resourcePath = args(1) + "worlds/test_world"
+                val resourcePath = args(1) + "/worlds/test_world"
                 val outputFile = args(1) + "/snapshots/test_world.snapshot"
                 GenerateSnapshotConfig(resourcePath, outputFile)
 

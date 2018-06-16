@@ -10,11 +10,22 @@ Dependencies:
 * The `spatial` CLI tool (available for various OSes from [here](https://docs.improbable.io/reference/13.0/index))
 * [Gradle 4.x or higher](https://gradle.org/install/) installed and on your PATH
 
-Run `spatial worker build TiledWorker` to generate the SpatialOS Java SDK dependencies.
+Run `spatial worker build TiledWorker` to import the SpatialOS Java SDK dependencies and generate the schema generated code.
+
+## Generating a snapshot from map files
+
+Run `spatial local worker launch TiledWorker toSnapshot` to generate a snapshot.
+
+I'll fix this up to take better args soon, I promise.
+
+## Generating a map from snapshot files
+
+Run `spatial local worker launch TiledWorker toMaps` to get a `NotImplementedError` exception.
+
 
 ## Tiled Project Structure
 
-At the moment, the snapshot generator expects to be passed a world resource directory that follows the following format (defining `maps`, `tilesets`, and `img` folders).
+At the moment, the snapshot generator expects a world resource directory that follows the following format (defining `maps`, `tilesets`, and `img` folders).
 
 ```
 my_world/
@@ -29,6 +40,13 @@ my_world/
 ----forest_tiles.png
 ----lake_tiles.png
 ```
+
+## IntelliJ Setup
+
+`File -> New -> Project from existing sources...`
+and open `SpatialTiled/workers/tiled`.
+
+To run from within IntelliJ instead of through `spatial build` and `spatial local worker launch`, set up a run configuration with the main class `Launcher` and the arguments: `toSnapshot <path/to/SpatialTiled>`.
 
 ## Todo List
 * Resources: should be more than an ID
