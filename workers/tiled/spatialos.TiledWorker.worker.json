@@ -19,5 +19,79 @@
       "default": "RELIABLE_ORDERED",
       "checkout_all_initially": true
     }
+  },
+  "external": {
+    "toSnapshot": {
+      "run_type": "EXECUTABLE_ZIP",
+      "linux": {
+        "artifact_name": "TiledWorker@Linux.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toSnapshot",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      },
+      "windows": {
+        "artifact_name": "TiledWorker@Windows.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toSnapshot",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      },
+      "macos": {
+        "artifact_name": "TiledWorker@Mac.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toSnapshot",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      }
+    },
+    "toMaps": {
+      "run_type": "EXECUTABLE_ZIP",
+      "linux": {
+        "artifact_name": "TiledWorker@Linux.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toMaps",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      },
+      "windows": {
+        "artifact_name": "TiledWorker@Windows.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toMaps",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      },
+      "macos": {
+        "artifact_name": "TiledWorker@Mac.zip",
+        "command": "java",
+        "arguments": [
+          "-Xmx32m",
+          "-jar",
+          "TiledWorker.jar",
+          "toMaps",
+          "${IMPROBABLE_PROJECT_ROOT}"
+        ]
+      }
+    }
   }
 }

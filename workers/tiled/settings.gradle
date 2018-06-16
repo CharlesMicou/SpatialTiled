@@ -2,4 +2,4 @@ include ':worker-sdk'
 include ':worker'
 
 rootProject.name = "TiledWorker"
-gradle.ext.mainClass = 'com.dummy.DummyWorkerMain'
+gradle.ext.mainClass = 'Launcher'

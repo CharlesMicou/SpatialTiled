@@ -21,6 +21,7 @@ class SnapshotGenerator(resourceDir: String) {
     }
 
     private def validateResourceFolder(path: String): Unit = {
+        println(s"Loading resources from $path")
         val dir = new File(path)
         if (!dir.exists() || !dir.isDirectory) {
             throw new RuntimeException(s"$path is not a folder or does not exist.")
