@@ -51,5 +51,4 @@ To run from within IntelliJ instead of through `spatial build` and `spatial loca
 ## Todo List
 * Resources: should be more than an ID
 * Coordinate offset per map
-* Multiple map support
 * Snapshot to .tmx conversion

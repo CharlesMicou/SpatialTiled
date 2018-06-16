@@ -2,21 +2,25 @@ package generator
 
 import java.io.File
 
+import common.MagicConstants.{MAX_X_CHUNK, MAX_Z_CHUNK}
 import improbable.worker.{EntityId, SnapshotOutputStream}
 
-class SnapshotGenerator(resourceDir: String) {
-    validateResourceFolder(resourceDir)
-    val resourceDirectory: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
-        resourceDir + s"/${SnapshotGenerator.tilesetFolder}")
+class SnapshotGenerator(resourcePath: String) {
+    validateResourceFolder(resourcePath)
+    val tileResource: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
+        resourcePath + "/" + SnapshotGenerator.tilesetFolder)
 
-    val mapData: MapData = MapData.fromFile(
-        new File(resourceDir + "/" + SnapshotGenerator.mapFolder + "/map1.tmx"), resourceDirectory)
+    val maps: Seq[MapData] = loadMapDirectory(
+        resourcePath + "/" + SnapshotGenerator.mapFolder)
 
-    def writeSnapshot(path: String): Unit = {
+    def writeSnapshot(path: String, initialEntityId: Int): Unit = {
         val snapshotOutputStream = new SnapshotOutputStream(path)
-        mapData.toMapChunks(5, 5, resourceDirectory)
-          .zip(Stream.from(1337)).foreach(
-            f => snapshotOutputStream.writeEntity(new EntityId(f._2), f._1.toEntity))
+        maps.foreach {
+            mapData =>
+                mapData.toMapChunks(MAX_X_CHUNK, MAX_Z_CHUNK, tileResource)
+                  .zip(Stream.from(initialEntityId))
+                  .foreach(f => snapshotOutputStream.writeEntity(new EntityId(f._2), f._1.toEntity))
+        }
         snapshotOutputStream.close()
     }
 
@@ -37,6 +41,13 @@ class SnapshotGenerator(resourceDir: String) {
               s"${SnapshotGenerator.tilesetFolder}, " +
               s"${SnapshotGenerator.imgFolder}, " +
               s"${SnapshotGenerator.mapFolder}")
+    }
+
+    private def loadMapDirectory(mapDirectoryPath: String): Seq[MapData] = {
+        val dir = new File(mapDirectoryPath)
+        dir.listFiles
+          .filter(f => f.isFile && f.getName.endsWith(".tmx"))
+          .map(mapFile => MapData.fromFile(mapFile, tileResource))
     }
 }
 

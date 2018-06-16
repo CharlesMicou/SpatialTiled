@@ -4,11 +4,13 @@ object Launcher extends App {
     private case class GenerateSnapshotConfig(resourcePath: String, outputFile: String)
     private case class GenerateMapsConfig(inputFile: String, outputResourceDir: String)
 
+    val initialEntityId = 1234
+
     parseArgs match {
         case toSnapshot: GenerateSnapshotConfig =>
             println("Starting snapshot generation.")
             val snapshotGenerator = new SnapshotGenerator(toSnapshot.resourcePath)
-            snapshotGenerator.writeSnapshot(toSnapshot.outputFile)
+            snapshotGenerator.writeSnapshot(toSnapshot.outputFile, initialEntityId)
 
         case toMaps: GenerateMapsConfig =>
             println("Conversion to maps from snapshot not yet implemented.")
