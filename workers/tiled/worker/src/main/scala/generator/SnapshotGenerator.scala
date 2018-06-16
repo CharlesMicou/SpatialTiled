@@ -3,25 +3,46 @@ package generator
 import java.io.File
 
 import common.MagicConstants.{MAX_X_CHUNK, MAX_Z_CHUNK}
-import improbable.worker.{EntityId, SnapshotOutputStream}
+import improbable.worker.{EntityId, SnapshotInputStream, SnapshotOutputStream}
+import tiled.map.MapChunk
+import tiled.resource.GzippedResource
+import util.SnapshotFilter
 
 class SnapshotGenerator(resourcePath: String) {
     validateResourceFolder(resourcePath)
-    val tileResource: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
+    private val tileResource: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
         resourcePath + "/" + SnapshotGenerator.tilesetFolder)
 
-    val maps: Seq[MapData] = loadMapDirectory(
+    private val maps: Seq[MapData] = loadMapDirectory(
         resourcePath + "/" + SnapshotGenerator.mapFolder)
 
-    def writeSnapshot(path: String, initialEntityId: Int): Unit = {
+    def generateSnapshot(path: String, fromSnapshot: Option[String]): Unit = {
         val snapshotOutputStream = new SnapshotOutputStream(path)
+
+        val entityIdOffset: Long = fromSnapshot match {
+            case Some(existingSnapshot) =>
+                val snapshotInputStream = new SnapshotInputStream(existingSnapshot)
+                val offset = SnapshotFilter.removeEntitiesWithComponents(
+                    snapshotInputStream, snapshotOutputStream, SnapshotGenerator.filteredComponents)
+                snapshotInputStream.close()
+                offset
+
+            case None => 0
+        }
+
+        writeEntities(snapshotOutputStream, entityIdOffset)
+        snapshotOutputStream.close()
+    }
+
+    private def writeEntities(snapshotOutputStream: SnapshotOutputStream,
+                              entityIdOffset: Long): Unit = {
         maps.foreach {
             mapData =>
                 mapData.toMapChunks(MAX_X_CHUNK, MAX_Z_CHUNK, tileResource)
-                  .zip(Stream.from(initialEntityId))
-                  .foreach(f => snapshotOutputStream.writeEntity(new EntityId(f._2), f._1.toEntity))
+                  .zip(Stream.from(1))
+                  .foreach(f => snapshotOutputStream.writeEntity(
+                      new EntityId(entityIdOffset + f._2), f._1.toEntity))
         }
-        snapshotOutputStream.close()
     }
 
     private def validateResourceFolder(path: String): Unit = {
@@ -55,4 +76,5 @@ object SnapshotGenerator {
     val tilesetFolder = "tilesets"
     val imgFolder = "img"
     val mapFolder = "maps"
+    val filteredComponents: Set[Int] = Set(MapChunk.COMPONENT_ID, GzippedResource.COMPONENT_ID)
 }
