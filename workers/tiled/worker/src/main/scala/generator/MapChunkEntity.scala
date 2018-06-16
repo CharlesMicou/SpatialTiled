@@ -2,7 +2,8 @@ package generator
 
 import java.util
 
-import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
+import common.MagicConstants
+import common.MagicConstants.{READ_ATTRIBUTES, TILE_X_DIMENSION, TILE_Z_DIMENSION, WRITE_ATTRIBUTE}
 import improbable._
 import improbable.worker.Entity
 import tiled.map.{MapChunk, MapChunkData, MapChunkProperties, TileLayer}
@@ -30,8 +31,15 @@ class MapChunkEntity(name: String,
     }
 
     def makeEntityAcl: EntityAclData = {
-        val readAcl = new WorkerRequirementSet(new java.util.ArrayList())
-        val writeAcl = new util.HashMap[Integer, WorkerRequirementSet]()
+        val readAcl = new WorkerRequirementSet(
+            READ_ATTRIBUTES.map(attribute => new WorkerAttributeSet(Seq(attribute))))
+        val writeAcl: Map[Integer, WorkerRequirementSet] = WRITE_ATTRIBUTE match {
+            case Some(attribute) =>
+                Map((MapChunk.COMPONENT_ID: Integer) ->
+                  new WorkerRequirementSet(Seq(new WorkerAttributeSet(Seq(attribute)))))
+            case None =>
+                Map.empty
+        }
         new EntityAclData(readAcl, writeAcl)
     }
 

@@ -14,7 +14,7 @@ Run `spatial worker build TiledWorker` to import the SpatialOS Java SDK dependen
 
 ## Generating a snapshot from map files
 
-Run `spatial local worker launch TiledWorker toSnapshot` to generate a snapshot.
+Run `spatial local worker launch TiledWorker toSnapshot` to generate a snapshot outputted to `snapshots/test_world.snapshot`.
 
 I'll fix this up to take better args soon, I promise.
 
@@ -50,5 +50,4 @@ To run from within IntelliJ instead of through `spatial build` and `spatial loca
 
 ## Todo List
 * Resources: should be more than an ID
-* Set ACLs correctly
 * Snapshot to .tmx conversion

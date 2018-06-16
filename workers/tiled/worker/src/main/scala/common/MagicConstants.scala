@@ -11,4 +11,8 @@ object MagicConstants {
     // The maximum chunk sizes for map entities
     val MAX_X_CHUNK = 5
     val MAX_Z_CHUNK = 5
+
+    // The attributes for map chunk entities
+    val READ_ATTRIBUTES: Seq[String] = Seq("shoveler", "loadtest", "gamex")
+    val WRITE_ATTRIBUTE: Option[String] = Option.empty
 }
