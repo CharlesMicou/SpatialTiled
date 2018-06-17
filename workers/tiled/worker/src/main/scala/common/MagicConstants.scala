@@ -1,5 +1,7 @@
 package common
 
+import improbable.Coordinates
+
 /**
   * These will be stored in either configs or map files eventually...
   */
@@ -15,4 +17,7 @@ object MagicConstants {
     // The attributes for map chunk entities
     val READ_ATTRIBUTES: Seq[String] = Seq("gamex")
     val WRITE_ATTRIBUTE: Option[String] = Option.empty
+
+    // The world location to put resource entities.
+    val RESOURCE_COORDINATES: Coordinates = CoordinatesHelper.makeCoordinates(-499, -499, -499)
 }

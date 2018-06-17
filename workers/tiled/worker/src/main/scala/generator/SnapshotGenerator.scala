@@ -3,23 +3,18 @@ package generator
 import java.io.File
 
 import common.MagicConstants.{MAX_X_CHUNK, MAX_Z_CHUNK}
-import improbable.worker.{EntityId, SnapshotInputStream, SnapshotOutputStream}
+import improbable.worker.{Entity, EntityId, SnapshotInputStream, SnapshotOutputStream}
 import tiled.map.MapChunk
 import tiled.resource.GzippedResource
 import util.SnapshotFilter
 
 class SnapshotGenerator(resourcePath: String) {
     validateResourceFolder(resourcePath)
-    private val tileResource: TileResourceDirectory = TileResourceDirectory.parseResourceDirectory(
-        resourcePath + "/" + SnapshotGenerator.tilesetFolder)
-
-    private val maps: Seq[MapData] = loadMapDirectory(
-        resourcePath + "/" + SnapshotGenerator.mapFolder)
 
     def generateSnapshot(path: String, fromSnapshot: Option[String]): Unit = {
         val snapshotOutputStream = new SnapshotOutputStream(path)
 
-        val entityIdOffset: Long = fromSnapshot match {
+        var lastEntityId: Long = fromSnapshot match {
             case Some(existingSnapshot) =>
                 val snapshotInputStream = new SnapshotInputStream(existingSnapshot)
                 val offset = SnapshotFilter.removeEntitiesWithComponents(
@@ -30,12 +25,35 @@ class SnapshotGenerator(resourcePath: String) {
             case None => 0
         }
 
-        writeEntities(snapshotOutputStream, entityIdOffset)
+        val tileResource: TileResourceDirectory = TileResourceDirectory.loadResourceDirectory(
+            resourcePath + "/" + SnapshotGenerator.tilesetFolder, lastEntityId)
+
+        // Add the resource entities to the snapshot, and save the highest entity ID in use.
+        lastEntityId = lastEntityId.max(writeResourceEntities(
+            snapshotOutputStream, tileResource.resourceEntities))
+
+        val maps: Seq[MapData] = loadMapDirectory(
+            resourcePath + "/" + SnapshotGenerator.mapFolder, tileResource)
+
+        writeMapEntities(snapshotOutputStream, lastEntityId, maps, tileResource)
         snapshotOutputStream.close()
     }
 
-    private def writeEntities(snapshotOutputStream: SnapshotOutputStream,
-                              entityIdOffset: Long): Unit = {
+    /** Returns the largest entity id used by resource entities */
+    private def writeResourceEntities(snapshotOutputStream: SnapshotOutputStream,
+                                      entities: Seq[(Long, Entity)]): Long = {
+        var largestId: Long = 0
+        entities.foreach(f => {
+            largestId = largestId.max(f._1)
+            snapshotOutputStream.writeEntity(new EntityId(f._1), f._2)
+        })
+        largestId
+    }
+
+    private def writeMapEntities(snapshotOutputStream: SnapshotOutputStream,
+                              entityIdOffset: Long,
+                              maps: Seq[MapData],
+                              tileResource: TileResourceDirectory): Unit = {
         maps.foreach {
             mapData =>
                 mapData.toMapChunks(MAX_X_CHUNK, MAX_Z_CHUNK, tileResource)
@@ -64,7 +82,8 @@ class SnapshotGenerator(resourcePath: String) {
               s"${SnapshotGenerator.mapFolder}")
     }
 
-    private def loadMapDirectory(mapDirectoryPath: String): Seq[MapData] = {
+    private def loadMapDirectory(mapDirectoryPath: String,
+                                 tileResource: TileResourceDirectory): Seq[MapData] = {
         val dir = new File(mapDirectoryPath)
         dir.listFiles
           .filter(f => f.isFile && f.getName.endsWith(".tmx"))

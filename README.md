@@ -48,6 +48,21 @@ and open `SpatialTiled/workers/tiled`.
 
 To run from within IntelliJ instead of through `spatial build` and `spatial local worker launch`, set up a run configuration with the main class `Launcher` and the arguments: `toSnapshot <path/to/SpatialTiled>`.
 
+## Satire Warning
+
+In order to aggravate my dear friend Fabian, this tool is written in Scala and deliberately makes use of dangerous features and antipatterns.
+
+Highlights include:
+* XML DSL
+* Implicit classes for generated code
+* Nested `for`-`yield` blocks
+* `Any` in `match` clauses
+* `assert` statements scattered everywhere
+* `import scala.collection.JavaConversions._`
+
+Please don't take this code seriously.
+Please don't show it to my current or future employers.
+
 ## Todo List
 * Resources: implement remote resources
 * Snapshot to .tmx conversion
