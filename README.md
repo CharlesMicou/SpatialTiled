@@ -64,7 +64,7 @@ Please don't take this code seriously.
 Please don't show it to my current or future employers.
 
 ## Todo List
-* Resources: implement remote resources
+* Clean up remote resource code
 * Snapshot to .tmx conversion
 * Layer properties
-* Object support
+* Object layer support
