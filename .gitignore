@@ -40,3 +40,6 @@ dependencies/
 
 # IntelliJ
 .idea
+
+# Generated world files
+generated_world

@@ -20,15 +20,18 @@ class TiledProjectGenerator(outputDir: String) {
     }
 
     private def writeResources(resources: Seq[GzippedResourceData]) = {
-        val test = resources.head.getGzippedTilesetFile.getBackingArray
-        val xml = Gzipper.decompressToXml(test)
-        println(xml)
-
         resources.foreach(
-            resource =>
-                // First read the tileset file to figure out how to name everything
-                resource.getGzippedTilesetFile
+            resource => {
+                val xml = Gzipper.decompressToXml(resource.getGzippedTilesetFile.getBackingArray)
+                // todo: validate presence of these attributes instead of exploding on arbitrary data
+                val tilesetName = xml.attribute("name").get.text
+                val imgName = (xml \\ "image").head.attribute("source").get.text.split("/").last
 
+                Gzipper.decompressToFile(resource.getGzippedSourceImagePng.getBackingArray,
+                    new File(imgDir + "/" + imgName))
+                Gzipper.decompressToFile(resource.getGzippedTilesetFile.getBackingArray,
+                    new File(tilesetDir + "/" + tilesetName + ".tsx"))
+            }
         )
     }
 
