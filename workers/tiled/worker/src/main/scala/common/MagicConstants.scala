@@ -6,6 +6,11 @@ import improbable.Coordinates
   * These will be stored in either configs or map files eventually...
   */
 object MagicConstants {
+    // Project structure folders
+    val tilesetFolder = "tilesets"
+    val imgFolder = "img"
+    val mapFolder = "maps"
+
     // The dimensions of a tile in SpatialOS world units.
     val TILE_X_DIMENSION = 1.0f
     val TILE_Z_DIMENSION = 1.0f

@@ -2,6 +2,7 @@ package generator
 
 import java.io.File
 
+import common.MagicConstants
 import improbable.worker.Entity
 import tiled.map.TileId
 import tiled.resource.{LocalResource, RemoteResource, TileResource}
@@ -69,7 +70,7 @@ object TileResourceDirectory {
         tileResource.setRemoteResource(new RemoteResource(entityId))
 
         // todo use the relative path instead of stupid hacks
-        val imgFile = new File(new File(file.getParent).getParent + "/img/" + sourceImage)
+        val imgFile = new File(new File(file.getParent).getParent + "/" + MagicConstants.imgFolder + "/" + sourceImage)
 
         (file.getName, tileResource, ResourceEntity.makeResourceEntity(file, imgFile))
     }

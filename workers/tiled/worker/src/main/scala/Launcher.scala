@@ -1,4 +1,4 @@
-import generator.SnapshotGenerator
+import generator.{SnapshotGenerator, TiledProjectGenerator}
 
 object Launcher extends App {
     private case class GenerateSnapshotConfig(resourcePath: String, outputFile: String, existingSnapshot: Option[String])
@@ -10,7 +10,7 @@ object Launcher extends App {
         "To generate a snapshot: \"toSnapshot /path/to/project\"\n" +
         "To modify an existing snapshot: \"toSnapshot /path/to/project /path/to/snapshot.snapshot\"\n" +
         "-- Map generation --\n" +
-        "To generate maps from a snapshot: \"toMaps and then other things I need to implement\""
+        "To generate maps from a snapshot: \"toMaps /path/to/snapshot.snapshot /path/to/output\""
     }
 
     parseArgs match {
@@ -20,8 +20,8 @@ object Launcher extends App {
             snapshotGenerator.generateSnapshot(toSnapshot.outputFile, toSnapshot.existingSnapshot)
 
         case toMaps: GenerateMapsConfig =>
+            val tiledProjectGenerator = new TiledProjectGenerator(toMaps.outputResourceDir)
             println("Conversion to maps from snapshot not yet implemented.")
-            ???
 
         case _ =>
             println(usageMsg)
@@ -43,7 +43,7 @@ object Launcher extends App {
                 }
 
             case "toMaps" =>
-                GenerateMapsConfig("not", "implemented")
+                GenerateMapsConfig(args(1), args(2))
 
             case _ =>
                 println(usageMsg)

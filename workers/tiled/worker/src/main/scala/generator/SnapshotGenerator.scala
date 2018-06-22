@@ -2,6 +2,7 @@ package generator
 
 import java.io.File
 
+import common.MagicConstants
 import common.MagicConstants.{MAX_X_CHUNK, MAX_Z_CHUNK}
 import improbable.worker.{Entity, EntityId, SnapshotInputStream, SnapshotOutputStream}
 import tiled.map.MapChunk
@@ -26,14 +27,14 @@ class SnapshotGenerator(resourcePath: String) {
         }
 
         val tileResource: TileResourceDirectory = TileResourceDirectory.loadResourceDirectory(
-            resourcePath + "/" + SnapshotGenerator.tilesetFolder, lastEntityId)
+            resourcePath + "/" + MagicConstants.tilesetFolder, lastEntityId)
 
         // Add the resource entities to the snapshot, and save the highest entity ID in use.
         lastEntityId = lastEntityId.max(writeResourceEntities(
             snapshotOutputStream, tileResource.resourceEntities))
 
         val maps: Seq[MapData] = loadMapDirectory(
-            resourcePath + "/" + SnapshotGenerator.mapFolder, tileResource)
+            resourcePath + "/" + MagicConstants.mapFolder, tileResource)
 
         writeMapEntities(snapshotOutputStream, lastEntityId, maps, tileResource)
         snapshotOutputStream.close()
@@ -72,14 +73,14 @@ class SnapshotGenerator(resourcePath: String) {
         assert(dir.listFiles()
           .filter(file => file.isDirectory)
           .count(file => {
-              file.getName.equals(SnapshotGenerator.tilesetFolder) ||
-                file.getName.equals(SnapshotGenerator.imgFolder) ||
-                file.getName.equals(SnapshotGenerator.mapFolder)
+              file.getName.equals(MagicConstants.tilesetFolder) ||
+                file.getName.equals(MagicConstants.imgFolder) ||
+                file.getName.equals(MagicConstants.mapFolder)
           }) == 3,
             s"Resource directory $path did not contain the required folders: " +
-              s"${SnapshotGenerator.tilesetFolder}, " +
-              s"${SnapshotGenerator.imgFolder}, " +
-              s"${SnapshotGenerator.mapFolder}")
+              s"${MagicConstants.tilesetFolder}, " +
+              s"${MagicConstants.imgFolder}, " +
+              s"${MagicConstants.mapFolder}")
     }
 
     private def loadMapDirectory(mapDirectoryPath: String,
@@ -92,8 +93,5 @@ class SnapshotGenerator(resourcePath: String) {
 }
 
 object SnapshotGenerator {
-    val tilesetFolder = "tilesets"
-    val imgFolder = "img"
-    val mapFolder = "maps"
     val filteredComponents: Set[Int] = Set(MapChunk.COMPONENT_ID, GzippedResource.COMPONENT_ID)
 }
