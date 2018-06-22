@@ -1,19 +1,21 @@
 package util
 
 import java.io.{ByteArrayInputStream, ByteArrayOutputStream, File}
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import scala.xml.{Elem, XML}
 
 object Gzipper {
-
-    // todo: actually test this thoroughly, you lazy maniac
     def compress(file: File): Array[Byte] = {
         val bytes = Files.readAllBytes(file.toPath)
-        val bos = new ByteArrayOutputStream(bytes.length)
+        compress(bytes)
+    }
+
+    def compress(input: Array[Byte]): Array[Byte] = {
+        val bos = new ByteArrayOutputStream(input.length)
         val gzip = new GZIPOutputStream(bos)
-        gzip.write(bytes)
+        gzip.write(input)
         gzip.close()
         val compressed = bos.toByteArray
         bos.close()

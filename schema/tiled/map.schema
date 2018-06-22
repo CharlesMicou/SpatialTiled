@@ -43,7 +43,6 @@ type TileLayer {
     uint32 id = 3;
 }
 
-
 // A unique identifier for a single tile.
 type TileId {
     // The resource this tile comes from.
@@ -52,4 +51,14 @@ type TileId {
 
     // The id of the tile within the resource.
     uint32 inner_id = 2;
+}
+
+component MapEditorMetadata {
+    id = 3001;
+
+    // The name of the map this metadata corresponds to.
+    string map_name = 1;
+
+    // The metadata for the map file relevant to the editor.
+    bytes payload = 2;
 }

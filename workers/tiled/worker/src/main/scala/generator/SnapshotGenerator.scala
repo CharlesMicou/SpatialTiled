@@ -52,16 +52,23 @@ class SnapshotGenerator(resourcePath: String) {
     }
 
     private def writeMapEntities(snapshotOutputStream: SnapshotOutputStream,
-                              entityIdOffset: Long,
-                              maps: Seq[MapData],
-                              tileResource: TileResourceDirectory): Unit = {
-        maps.foreach {
-            mapData =>
-                mapData.toMapChunks(MAX_X_CHUNK, MAX_Z_CHUNK, tileResource)
-                  .zip(Stream.from(1))
-                  .foreach(f => snapshotOutputStream.writeEntity(
-                      new EntityId(entityIdOffset + f._2), f._1.toEntity))
-        }
+                                 entityIdOffset: Long,
+                                 maps: Seq[MapData],
+                                 tileResource: TileResourceDirectory): Unit = {
+        // Write chunk data and count how many entity IDs were used in the process
+        val usedEntityIds = maps
+          .flatMap(mapData => mapData.toMapChunks(MAX_X_CHUNK, MAX_Z_CHUNK, tileResource))
+          .zip(Stream.from(1))
+          .count(f => {
+              snapshotOutputStream.writeEntity(
+                  new EntityId(entityIdOffset + f._2), f._1.toEntity)
+              true
+          })
+
+        // Write map metadata entities at the end
+        maps.zip(Stream.from(1))
+          .foreach(f => snapshotOutputStream.writeEntity(
+              new EntityId(entityIdOffset + usedEntityIds + f._2), f._1.metadataEntity()))
     }
 
     private def validateResourceFolder(path: String): Unit = {

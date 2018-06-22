@@ -2,16 +2,25 @@ package generator
 
 import java.io.File
 
-import improbable.Coordinates
-import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
+import improbable._
+import common.MagicConstants.{RESOURCE_COORDINATES, TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import common.CoordinatesHelper._
 import common.TileLayer
+import improbable.worker.{Bytes, Entity}
+import tiled.map.{MapEditorMetadata, MapEditorMetadataData}
+import util.Gzipper
 
-import scala.xml.{Elem, XML}
+import scala.xml.transform.{RewriteRule, RuleTransformer}
+import scala.xml.{Elem, Node, XML}
 
 case class MapLayer(name: String, id: Int, tileData: TileLayer)
 
-class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer], origin: Coordinates) {
+class MapData(name: String,
+              width: Int,
+              height: Int,
+              layers: Seq[MapLayer],
+              origin: Coordinates,
+              metadata: Seq[Node]) {
 
     def toMapChunks(maxChunkWidth: Int,
                     maxChunkHeight: Int,
@@ -44,6 +53,18 @@ class MapData(name: String, width: Int, height: Int, layers: Seq[MapLayer], orig
                 chunkedMapLayers,
                 tileResourceDirectory)
         }
+    }
+
+    def metadataEntity(): Entity = {
+        val entity = new Entity
+        val data = Gzipper.compress(metadata.toString().getBytes())
+        entity.add(Metadata.COMPONENT, new MetadataData("MapMetadata"))
+        entity.add(Persistence.COMPONENT, new PersistenceData())
+        entity.add(EntityAcl.COMPONENT, EntityAclData.create())
+        entity.add(MapEditorMetadata.COMPONENT, new MapEditorMetadataData(
+            name, Bytes.fromBackingArray(data)))
+        entity.add(Position.COMPONENT, new PositionData(RESOURCE_COORDINATES))
+        entity
     }
 
     def writeToDir(outputDir: String): Unit = {
@@ -94,8 +115,22 @@ object MapData {
               MapLayer(name, id, TileLayer.fromRowsAndCols(data))
           })
 
+        val metadata = new RuleTransformer(xmlFilter(Set("layer", "tileset", "objectgroup")))
+          .transform(xml)
 
-        new MapData(mapName, width, height, layers, mapOffset)
+        new MapData(mapName, width, height, layers, mapOffset, metadata)
+    }
+
+    private def xmlFilter(ignoredLabels: Set[String]): RewriteRule = new RewriteRule {
+        override def transform(n: Node): Seq[Node] = n match {
+            case elem: Elem =>
+                if (ignoredLabels.exists(x => elem.label.equals(x))) {
+                    Seq.empty
+                } else {
+                    elem
+                }
+            case n => n
+        }
     }
 
     private def mapOffsetCoordinates(xml: Elem): Coordinates = {
