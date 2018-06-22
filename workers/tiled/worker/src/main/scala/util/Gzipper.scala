@@ -24,8 +24,6 @@ object Gzipper {
         val inputAsStream = new GZIPInputStream(new ByteArrayInputStream(input))
         Files.copy(inputAsStream, output.toPath)
         inputAsStream.close()
-        // todo: figure out if we want to decompress straight to file
-        // or an intermediate representation
     }
 
     def decompressToXml(input: Array[Byte]): Elem = {
