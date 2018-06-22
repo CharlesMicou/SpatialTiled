@@ -1,8 +1,10 @@
 package util
 
-import java.io.{ByteArrayOutputStream, File}
-import java.nio.file.Files
-import java.util.zip.GZIPOutputStream
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, File}
+import java.nio.file.{Files, Path}
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+
+import scala.xml.{Elem, XML}
 
 object Gzipper {
 
@@ -18,9 +20,18 @@ object Gzipper {
         compressed
     }
 
-    def decompress(input: Array[Byte]) = {
+    def decompressToFile(input: Array[Byte], output: File): Unit = {
+        val inputAsStream = new GZIPInputStream(new ByteArrayInputStream(input))
+        Files.copy(inputAsStream, output.toPath)
+        inputAsStream.close()
         // todo: figure out if we want to decompress straight to file
         // or an intermediate representation
-        ???
+    }
+
+    def decompressToXml(input: Array[Byte]): Elem = {
+        val inputAsStream = new GZIPInputStream(new ByteArrayInputStream(input))
+        val result = XML.load(inputAsStream)
+        inputAsStream.close()
+        result
     }
 }

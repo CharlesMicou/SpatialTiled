@@ -21,7 +21,8 @@ object Launcher extends App {
 
         case toMaps: GenerateMapsConfig =>
             val tiledProjectGenerator = new TiledProjectGenerator(toMaps.outputResourceDir)
-            println("Conversion to maps from snapshot not yet implemented.")
+            println("Starting map file extraction.")
+            tiledProjectGenerator.loadFromSnapshot(toMaps.inputFile)
 
         case _ =>
             println(usageMsg)
