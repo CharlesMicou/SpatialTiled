@@ -28,6 +28,10 @@ class TileLayer(data: Map[(Int, Int), TileId], width: Int, height: Int) {
         } result(i + j * width) = data(i, j)
         result
     }
+
+    def getTile(x: Int, z: Int): Option[TileId] = {
+        data.get((x, z))
+    }
 }
 
 object TileLayer {
