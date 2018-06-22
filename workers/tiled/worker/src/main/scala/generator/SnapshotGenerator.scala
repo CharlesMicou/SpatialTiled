@@ -61,7 +61,7 @@ class SnapshotGenerator(resourcePath: String) {
           .zip(Stream.from(1))
           .count(f => {
               snapshotOutputStream.writeEntity(
-                  new EntityId(entityIdOffset + f._2), f._1.toEntity)
+                  new EntityId(entityIdOffset + f._2), f._1.toEntity(tileResource))
               true
           })
 

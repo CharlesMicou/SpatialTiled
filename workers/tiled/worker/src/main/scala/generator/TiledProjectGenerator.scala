@@ -4,9 +4,14 @@ import java.io.File
 
 import common.MagicConstants
 import generator.TiledProjectGenerator.ParsedSnapshot
+import improbable.{Position, PositionData}
 import improbable.worker.SnapshotInputStream
+import tiled.map.{MapChunk, MapChunkData, MapEditorMetadata, MapEditorMetadataData}
 import tiled.resource.{GzippedResource, GzippedResourceData}
 import util.Gzipper
+
+import scala.collection.mutable
+import scala.xml.Elem
 
 class TiledProjectGenerator(outputDir: String) {
     private val imgDir = outputDir + "/" + MagicConstants.imgFolder
@@ -17,40 +22,62 @@ class TiledProjectGenerator(outputDir: String) {
     def loadFromSnapshot(snapshotPath: String): Unit = {
         val parsedSnapshot = parseSnapshot(snapshotPath)
         writeResources(parsedSnapshot.resources)
+        writeMaps(parsedSnapshot.editorMetadata, parsedSnapshot.mapChunks)
     }
 
-    private def writeResources(resources: Seq[GzippedResourceData]) = {
+    private def writeResources(resources: Seq[GzippedResourceData]): Unit = {
         resources.foreach(
             resource => {
                 val xml = Gzipper.decompressToXml(resource.getGzippedTilesetFile.getBackingArray)
                 // todo: validate presence of these attributes instead of exploding on arbitrary data
-                val tilesetName = xml.attribute("name").get.text
-                val imgName = (xml \\ "image").head.attribute("source").get.text.split("/").last
-
-                Gzipper.decompressToFile(resource.getGzippedSourceImagePng.getBackingArray,
-                    new File(imgDir + "/" + imgName))
-                Gzipper.decompressToFile(resource.getGzippedTilesetFile.getBackingArray,
-                    new File(tilesetDir + "/" + tilesetName + ".tsx"))
+                val tilesetFile = new File(tilesetDir + "/" + xml.attribute("name").get.text + ".tsx")
+                val imgFile = new File(imgDir + "/" + (xml \\ "image").head.attribute("source").get.text.split("/").last)
+                Gzipper.decompressToFile(resource.getGzippedTilesetFile.getBackingArray, tilesetFile)
+                println(s"Saved ${tilesetFile.getPath}")
+                Gzipper.decompressToFile(resource.getGzippedSourceImagePng.getBackingArray, imgFile)
+                println(s"Saved ${imgFile.getPath}")
             }
         )
+    }
+
+    private def writeMaps(editorMetadata: Map[String, Elem], mapChunks: Map[String, Set[MapChunkEntity]]): Unit = {
+        editorMetadata.foreach(f => {
+            val name = f._1
+            println(s"Loading ${mapChunks.getOrElse(name, Set.empty).size} chunks for map $name")
+        })
+        // todo!
     }
 
     private def parseSnapshot(snapshotPath: String): ParsedSnapshot = {
         val snapshotInputStream = new SnapshotInputStream(snapshotPath)
         var resources: Seq[GzippedResourceData] = Seq.empty
+        var mapEditorMetadata: Map[String, Elem] = Map.empty
+        val mapChunks = new mutable.HashMap[String, mutable.Set[MapChunkEntity]]() with mutable.MultiMap[String, MapChunkEntity]
         while (snapshotInputStream.hasNext) {
             val entity = snapshotInputStream.readEntity()
             if (entity.getValue.getComponentIds.contains(GzippedResource.COMPONENT_ID)) {
-                // Type inference is wonky here
                 val data: GzippedResourceData = entity.getValue
                   .get[GzippedResource, GzippedResourceData](GzippedResource.COMPONENT).get()
                 resources = resources :+ data
             }
-            // todo: map metadata entities
-            // todo: map chunking by map id
+            if (entity.getValue.getComponentIds.contains(MapEditorMetadata.COMPONENT_ID)) {
+                val metadata: MapEditorMetadataData = entity.getValue
+                  .get[MapEditorMetadata, MapEditorMetadataData](MapEditorMetadata.COMPONENT).get()
+                val xml = Gzipper.decompressToXml(metadata.getPayload.getBackingArray)
+                mapEditorMetadata += (metadata.getMapName -> xml)
+            }
+            if (entity.getValue.getComponentIds.contains(MapChunk.COMPONENT_ID)) {
+                val mapChunkData = entity.getValue
+                  .get[MapChunk, MapChunkData](MapChunk.COMPONENT).get()
+                // It should be a safe assumption that the entity has a position
+                val position = entity.getValue
+                  .get[Position, PositionData](Position.COMPONENT).get()
+                val mce = MapChunkEntity.fromComponentAndPosition(
+                    mapChunkData, position.getCoords)
+                mapChunks.addBinding(mce.name, mce)
+            }
         }
-        // todo populate the rest of returned data
-        ParsedSnapshot(resources)
+        ParsedSnapshot(resources, mapEditorMetadata, mapChunks.map(f => (f._1, f._2.toSet)).toMap)
     }
 
     private def initProject(): Unit = {
@@ -62,6 +89,7 @@ class TiledProjectGenerator(outputDir: String) {
 
 object TiledProjectGenerator {
 
-    case class ParsedSnapshot(resources: Seq[GzippedResourceData])
-
+    case class ParsedSnapshot(resources: Seq[GzippedResourceData],
+                              editorMetadata: Map[String, Elem],
+                              mapChunks: Map[String, Set[MapChunkEntity]])
 }

@@ -3,7 +3,7 @@ package common
 import base.BaseTest
 import tiled.map.TileId
 
-class TileLayerTest extends BaseTest {
+class GridMapTest extends BaseTest {
 
     private val tileId1 = new TileId(1, 6)
     private val tileId2 = new TileId(2, 5)
@@ -33,14 +33,14 @@ class TileLayerTest extends BaseTest {
         (0, 1) -> tileId2,
         (0, 2) -> tileId3)
 
-    private val tileLayer = new TileLayer(layerData, 2, 3)
+    private val tileLayer = new GridMap(layerData, 2, 3)
 
     "Converting to the raw format" should "yield a sequence in the convention right-down" in {
         tileLayer.toRaw should be (expectedOrderingRaw)
     }
 
     "Extracting a subsection" should "provide exactly the tiles in that subsection" in {
-        tileLayer.subSection(0, 0, 1, 3).toRaw should be (new TileLayer(subSectionedData, 1, 3).toRaw)
+        tileLayer.subSection(0, 0, 1, 3).toRaw should be (new GridMap(subSectionedData, 1, 3).toRaw)
     }
 
     "Extracting a subsection" should "offset tiles in the subsection" in {

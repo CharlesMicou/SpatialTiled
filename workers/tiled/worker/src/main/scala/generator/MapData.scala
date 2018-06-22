@@ -5,7 +5,7 @@ import java.io.File
 import improbable._
 import common.MagicConstants.{RESOURCE_COORDINATES, TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import common.CoordinatesHelper._
-import common.TileLayer
+import common.GridMap
 import improbable.worker.{Bytes, Entity}
 import tiled.map.{MapEditorMetadata, MapEditorMetadataData}
 import util.Gzipper
@@ -13,7 +13,7 @@ import util.Gzipper
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 import scala.xml.{Elem, Node, XML}
 
-case class MapLayer(name: String, id: Int, tileData: TileLayer)
+case class MapLayer(name: String, id: Int, tileData: GridMap)
 
 class MapData(name: String,
               width: Int,
@@ -50,8 +50,7 @@ class MapData(name: String,
                 origin + offset,
                 xUpper - xLower,
                 zUpper - zLower,
-                chunkedMapLayers,
-                tileResourceDirectory)
+                chunkedMapLayers)
         }
     }
 
@@ -112,7 +111,7 @@ object MapData {
                                   tileResourceDirectory.tileIdFromMapFileMapping(csvEntry.toInt, localResourceMapping)
                           }
                 }
-              MapLayer(name, id, TileLayer.fromRowsAndCols(data))
+              MapLayer(name, id, GridMap.fromRowsAndCols(data))
           })
 
         val metadata = new RuleTransformer(xmlFilter(Set("layer", "tileset", "objectgroup")))
@@ -121,6 +120,8 @@ object MapData {
         new MapData(mapName, width, height, layers, mapOffset, metadata)
     }
 
+    /** Filter fields matching any of a set of labels from an XML file.
+      * Useful for stripping out data that will otherwise be encoded. */
     private def xmlFilter(ignoredLabels: Set[String]): RewriteRule = new RewriteRule {
         override def transform(n: Node): Seq[Node] = n match {
             case elem: Elem =>
