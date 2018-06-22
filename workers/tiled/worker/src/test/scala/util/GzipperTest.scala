@@ -3,11 +3,11 @@ package util
 import java.io.File
 import java.util.UUID
 
-import org.scalatest._
+import base.BaseTest
 
 import scala.xml.XML
 
-class GzipperTest extends FlatSpec with Matchers {
+class GzipperTest extends BaseTest {
     private lazy val tempDir = {
         val dir = File.createTempFile("scalatestdir", "")
         dir.delete()

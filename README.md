@@ -41,6 +41,10 @@ my_world/
 ----lake_tiles.png
 ```
 
+## Testing
+
+Run `gradle test` from within `workers/tiled` or `workers/tiled/worker` to run the unit tests.
+
 ## IntelliJ Setup
 
 `File -> New -> Project from existing sources...`

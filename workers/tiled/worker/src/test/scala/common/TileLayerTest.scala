@@ -1,10 +1,9 @@
 package common
 
+import base.BaseTest
 import tiled.map.TileId
 
-import org.scalatest._
-
-class TileLayerTest extends FlatSpec with Matchers {
+class TileLayerTest extends BaseTest {
 
     private val tileId1 = new TileId(1, 6)
     private val tileId2 = new TileId(2, 5)
