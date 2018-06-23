@@ -2,15 +2,14 @@ package generator
 
 import java.io.File
 
-import improbable._
-import common.MagicConstants.{RESOURCE_COORDINATES, TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import common.CoordinatesHelper._
 import common.GridMap
+import common.MagicConstants.{RESOURCE_COORDINATES, TILE_X_DIMENSION, TILE_Z_DIMENSION}
+import improbable._
 import improbable.worker.{Bytes, Entity}
 import tiled.map.{MapEditorMetadata, MapEditorMetadataData}
-import util.Gzipper
+import util.{Gzipper, XMLHelper}
 
-import scala.xml.transform.{RewriteRule, RuleTransformer}
 import scala.xml.{Elem, Node, XML}
 
 case class MapLayer(name: String, id: Int, tileData: GridMap)
@@ -114,24 +113,9 @@ object MapData {
               MapLayer(name, id, GridMap.fromRowsAndCols(data))
           })
 
-        val metadata = new RuleTransformer(xmlFilter(Set("layer", "tileset", "objectgroup")))
-          .transform(xml)
+        val metadata = XMLHelper.stripLabels(xml, Set("layer", "tileset", "objectgroup"))
 
         new MapData(mapName, width, height, layers, mapOffset, metadata)
-    }
-
-    /** Filter fields matching any of a set of labels from an XML file.
-      * Useful for stripping out data that will otherwise be encoded. */
-    private def xmlFilter(ignoredLabels: Set[String]): RewriteRule = new RewriteRule {
-        override def transform(n: Node): Seq[Node] = n match {
-            case elem: Elem =>
-                if (ignoredLabels.exists(x => elem.label.equals(x))) {
-                    Seq.empty
-                } else {
-                    elem
-                }
-            case n => n
-        }
     }
 
     private def mapOffsetCoordinates(xml: Elem): Coordinates = {
