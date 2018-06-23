@@ -12,6 +12,14 @@ object CoordinatesHelper {
             result
         }
 
+        def -(c2: Coordinates): Coordinates = {
+            val result = Coordinates.create()
+            result.setX(c1.getX - c2.getX)
+            result.setY(c1.getY - c2.getY)
+            result.setZ(c1.getZ - c2.getZ)
+            result
+        }
+
         def apply(x: Double, y: Double, z: Double): Coordinates = {
             val result = Coordinates.create()
             result.setX(x)
@@ -22,6 +30,10 @@ object CoordinatesHelper {
 
         def isTopLeftOf(c2: Coordinates): Boolean = {
             c1.getX <= c2.getX && c1.getZ >= c2.getZ
+        }
+
+        def isBottomRightOf(c2: Coordinates): Boolean = {
+            c1.getX >= c2.getX && c1.getZ <= c2.getZ
         }
     }
 

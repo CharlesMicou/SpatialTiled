@@ -2,7 +2,7 @@ package common
 
 import tiled.map.TileId
 
-class GridMap(data: Map[(Int, Int), TileId], width: Int, height: Int) {
+class GridMap(val data: Map[(Int, Int), TileId], val width: Int, val height: Int) {
     def subSection(fromX: Int, fromZ: Int, untilX: Int, untilZ: Int): GridMap = {
         assert(fromX >= 0, s"Supplied a fromX $fromX out of bounds")
         assert(fromZ >= 0, s"Supplied a fromZ $fromZ out of bounds")

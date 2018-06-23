@@ -10,14 +10,14 @@ import improbable.worker.{Bytes, Entity}
 import tiled.map.{MapEditorMetadata, MapEditorMetadataData}
 import util.{Gzipper, XMLHelper}
 
-import scala.xml.{Elem, Node, XML}
+import scala.xml.{Elem, XML}
 
 class MapData(name: String,
               width: Int,
               height: Int,
               layers: Seq[MapLayer],
               origin: Coordinates,
-              metadata: Seq[Node]) {
+              metadata: Elem) {
 
     def toMapChunks(maxChunkWidth: Int,
                     maxChunkHeight: Int,
@@ -70,11 +70,28 @@ class MapData(name: String,
 
 object MapData {
     def fromChunks(metadata: Elem, chunks: Seq[MapChunkEntity]): MapData = {
-        // The origin is the top-left-most chunk's origin
+        // The origin is the top-left-most chunk's origin.
         val origin = chunks
           .sortWith((c1, c2) => c1.coordinates.isTopLeftOf(c2.coordinates))
           .head.coordinates
-        ???
+
+        // All chunks share the same map name.
+        val name = chunks.head.name
+
+        // Iterate through layers, making the assumption that layers present
+        // in one chunk are present in all chunks.
+        val mapLayers: Seq[MapLayer] = chunks.head.mapLayers.map(
+            mapLayer =>
+              MapLayer.merge(chunks.flatMap(chunk =>
+                  chunk.mapLayers
+                    .filter(layer => layer.id == mapLayer.id)
+                    .map(a => (chunk.coordinates, a))).toMap)
+        )
+
+        val width = mapLayers.head.tileData.width
+        val height = mapLayers.head.tileData.height
+
+        new MapData(name, width, height, mapLayers, origin, metadata)
     }
 
     def fromFile(file: File, tileResourceDirectory: TileResourceDirectory): MapData = {
