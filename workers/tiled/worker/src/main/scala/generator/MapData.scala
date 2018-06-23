@@ -64,7 +64,15 @@ class MapData(name: String,
     }
 
     def writeToFile(file: File): Unit = {
-        // todo
+        // figure out the necessary dependencies and make a tileid -> gid function
+
+        // for each layer, write layer data as csv
+
+        XML.save(file.getAbsolutePath,
+            metadata,
+            "UTF-8",
+            xmlDecl = true,
+            doctype = null)
     }
 }
 
@@ -85,7 +93,7 @@ object MapData {
               MapLayer.merge(chunks.flatMap(chunk =>
                   chunk.mapLayers
                     .filter(layer => layer.id == mapLayer.id)
-                    .map(a => (chunk.coordinates, a))).toMap)
+                    .map(data => (chunk.coordinates, data))).toMap)
         )
 
         val width = mapLayers.head.tileData.width
