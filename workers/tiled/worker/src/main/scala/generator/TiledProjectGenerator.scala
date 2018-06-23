@@ -40,12 +40,21 @@ class TiledProjectGenerator(outputDir: String) {
         )
     }
 
-    private def writeMaps(editorMetadata: Map[String, Elem], mapChunks: Map[String, Set[MapChunkEntity]]): Unit = {
+    private def writeMaps(editorMetadata: Map[String, Elem],
+                          mapChunks: Map[String, Set[MapChunkEntity]]): Unit = {
         editorMetadata.foreach(f => {
             val name = f._1
-            println(s"Loading ${mapChunks.getOrElse(name, Set.empty).size} chunks for map $name")
+            mapChunks.get(f._1) match {
+                case Some(chunkEntities) =>
+                    val mapData = MapData.fromChunks(f._2, chunkEntities.toSeq)
+                    val mapFile = new File(mapDir + "/" + f._1)
+                    mapData.writeToFile(mapFile)
+                    println(s"Saved ${mapFile.getPath}")
+
+                case None =>
+                    println(s"Map ${f._1} had metadata, but no associated chunk entities. Not generating a map file.")
+            }
         })
-        // todo!
     }
 
     private def parseSnapshot(snapshotPath: String): ParsedSnapshot = {
@@ -88,7 +97,6 @@ class TiledProjectGenerator(outputDir: String) {
 }
 
 object TiledProjectGenerator {
-
     case class ParsedSnapshot(resources: Seq[GzippedResourceData],
                               editorMetadata: Map[String, Elem],
                               mapChunks: Map[String, Set[MapChunkEntity]])

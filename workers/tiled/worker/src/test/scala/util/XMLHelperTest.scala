@@ -38,6 +38,7 @@ class XMLHelperTest extends BaseTest {
 
         val newXml = XMLHelper.stripLabels(originalXml, labelsToRemove)
 
+        // Each one of the stripped layers is leaving a newline in the resultant xml :(
         newXml should be (desiredXml)
     }
 }

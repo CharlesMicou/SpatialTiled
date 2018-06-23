@@ -12,8 +12,6 @@ import util.{Gzipper, XMLHelper}
 
 import scala.xml.{Elem, Node, XML}
 
-case class MapLayer(name: String, id: Int, tileData: GridMap)
-
 class MapData(name: String,
               width: Int,
               height: Int,
@@ -65,13 +63,17 @@ class MapData(name: String,
         entity
     }
 
-    def writeToDir(outputDir: String): Unit = {
+    def writeToFile(file: File): Unit = {
         // todo
     }
 }
 
 object MapData {
-    def fromChunks(chunks: Seq[MapChunkEntity]): MapData = {
+    def fromChunks(metadata: Elem, chunks: Seq[MapChunkEntity]): MapData = {
+        // The origin is the top-left-most chunk's origin
+        val origin = chunks
+          .sortWith((c1, c2) => c1.coordinates.isTopLeftOf(c2.coordinates))
+          .head.coordinates
         ???
     }
 

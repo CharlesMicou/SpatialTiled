@@ -19,6 +19,10 @@ object CoordinatesHelper {
             result.setZ(z)
             result
         }
+
+        def isTopLeftOf(c2: Coordinates): Boolean = {
+            c1.getX <= c2.getX && c1.getZ >= c2.getZ
+        }
     }
 
     def makeCoordinates(x: Double, y: Double, z: Double): Coordinates = {
