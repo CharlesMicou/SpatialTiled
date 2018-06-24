@@ -39,7 +39,8 @@ object MapLayer {
             TILE_Z_DIMENSION - bottomRightPair._2.tileData.height)
 
         val width: Int = ((bottomRight.getX - topLeft.getX) / TILE_X_DIMENSION).toInt
-        val height: Int = ((topLeft.getZ - bottomRight.getZ) / TILE_Z_DIMENSION).toInt
+        // Why is there a +1 here? The inversion shenanigans mean rounding is working against us.
+        val height: Int = ((topLeft.getZ - bottomRight.getZ) / TILE_Z_DIMENSION).toInt + 1
 
         val mergedGridData = parts.flatMap(pair => {
             val relativeOrigin = pair._1 - topLeft
