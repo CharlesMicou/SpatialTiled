@@ -4,8 +4,26 @@ import common.CoordinatesHelper._
 import common.GridMap
 import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
 import improbable.Coordinates
+import util.XMLHelper
 
-case class MapLayer(name: String, id: Int, tileData: GridMap)
+import scala.xml.Elem
+
+case class MapLayer(name: String, id: Int, tileData: GridMap) {
+    def toXml(localTileResourceMapping: LocalTileResourceMapping): Elem = {
+        val root = XMLHelper.makeElemWithAttributes("layer", Map(
+            "id" -> id.toString,
+            "name" -> name,
+            "width" -> tileData.width.toString,
+            "height" -> tileData.height.toString))
+        val data = <data encoding="csv">
+            {tileData.toRaw.map(tileId => localTileResourceMapping.getLocalId(tileId)).mkString(",")}
+        </data>
+        val properties = <properties>
+            <property name="placeholder_property" type="int" value="1337"/>
+        </properties>
+        XMLHelper.addChildren(root, Seq(data, properties))
+    }
+}
 
 object MapLayer {
     /** Merge several map layers with coordinate offsets into a single map layer */

@@ -19,8 +19,16 @@ class XMLHelperTest extends BaseTest {
         constructed should be (literal)
     }
 
+    "Adding children to xml elems" should "return immutable xml with the new children" in {
+        val original = <test><tileset firstgid = "1"/></test>
+        val toAdd = <tileset firstgid = "2"/>
+        val expected = <test><tileset firstgid = "1"/><tileset firstgid = "2"/></test>
+        val newXml = XMLHelper.addChildren(original, Seq(toAdd))
+        newXml should be (expected)
+    }
+
     // Ignored because of whitespace shenanigans I don't have the patience to fix
-    "Stripping an XML by label" should "return the XML with label data removed" ignore  {
+    "Stripping an XML by label" should "return the XML with label data removed" ignore {
         val originalXml = <map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="15" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
             <properties>
                 <property name="coordinate_offset" value="0.0, 0.0, 0.0"/>

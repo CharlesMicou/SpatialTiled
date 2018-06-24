@@ -71,17 +71,22 @@ class MapData(name: String,
         val localTileResourceMapping = LocalTileResourceMapping
           .makeForResources(allUniqueTiles, resourceIdToTileset)
 
-        val dependencies = localTileResourceMapping.getDependenciesAndInitialIds.map {
+        val dependenciesAsXml = localTileResourceMapping.getDependenciesAndInitialIds.map {
             f =>
-              val a = <tileset/> % Attribute(None, "source", Text(f._2), Null)
-                f._2
+              //todo: remove this
+              val hackyPathToRemoveLater = "../tilesets/"
+              XMLHelper.makeElemWithAttributes(
+                  "tileset",
+                  Map("source" -> (hackyPathToRemoveLater + f._2), "firstgid" -> f._1.toString))
         }
+
+        val layersAsXml = layers.map(layer => layer.toXml(localTileResourceMapping))
 
         // for each layer, write layer data as csv
         // or... figure out the dependencies as you go?
 
         XML.save(file.getAbsolutePath,
-            metadata,
+            XMLHelper.addChildren(metadata, Seq(dependenciesAsXml, layersAsXml).flatten),
             "UTF-8",
             xmlDecl = true,
             doctype = null)

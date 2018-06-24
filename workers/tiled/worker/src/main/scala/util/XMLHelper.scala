@@ -23,6 +23,10 @@ object XMLHelper {
         applyAttributeRecursively(root, attributes.toSeq)
     }
 
+    def addChildren(original: Elem, newChildren: Seq[Elem]): Elem = {
+        original.copy(child = original.child ++ newChildren)
+    }
+
     private def applyAttributeRecursively(root: Elem, attributes: Seq[(String, String)]): Elem = {
         if (attributes.isEmpty) {
             root
