@@ -69,6 +69,5 @@ Please don't show it to my current or future employers.
 
 ## Todo List
 * Clean up remote resource code and remove local resources
-* Snapshot to .tmx conversion
-* Layer properties
+* Support layer properties
 * Object layer support
