@@ -11,6 +11,13 @@ class XMLHelperTest extends BaseTest {
         a should be (b)
     }
 
+    "Making xml elems with attributes" should "work properly" in {
+        val literal = <tileset firstgid="1" source="tsx"/>
+        val constructed = XMLHelper.makeElemWithAttributes(
+            "tileset", Map("firstgid" -> "1", "source" -> "tsx"))
+
+        constructed should be (literal)
+    }
 
     // Ignored because of whitespace shenanigans I don't have the patience to fix
     "Stripping an XML by label" should "return the XML with label data removed" ignore  {

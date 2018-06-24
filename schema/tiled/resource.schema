@@ -28,9 +28,12 @@ type RemoteResource {
 component GzippedResource {
     id = 3002;
 
+    // The unique identifier of this resource.
+    uint32 resource_id = 1;
+
     // The source image of the tileset, compressed with gzip.
-    bytes gzipped_source_image_png = 1;
+    bytes gzipped_source_image_png = 2;
 
     // The .tsx tileset definition, compressed with gzip.
-    bytes gzipped_tileset_file =  2;
+    bytes gzipped_tileset_file =  3;
 }

@@ -1,8 +1,8 @@
 package generator
 
 import common.CoordinatesHelper._
+import common.GridMap
 import common.MagicConstants.{TILE_X_DIMENSION, TILE_Z_DIMENSION}
-import common.{GridMap, MagicConstants}
 import improbable.Coordinates
 
 case class MapLayer(name: String, id: Int, tileData: GridMap)

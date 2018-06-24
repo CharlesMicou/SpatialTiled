@@ -3,7 +3,7 @@ package generator
 import java.io.File
 
 import common.MagicConstants
-import generator.TiledProjectGenerator.ParsedSnapshot
+import generator.TiledProjectGenerator.{ParsedSnapshot, TileResourceWithSize}
 import improbable.{Position, PositionData}
 import improbable.worker.SnapshotInputStream
 import tiled.map.{MapChunk, MapChunkData, MapEditorMetadata, MapEditorMetadataData}
@@ -21,38 +21,45 @@ class TiledProjectGenerator(outputDir: String) {
 
     def loadFromSnapshot(snapshotPath: String): Unit = {
         val parsedSnapshot = parseSnapshot(snapshotPath)
-        writeResources(parsedSnapshot.resources)
-        writeMaps(parsedSnapshot.editorMetadata, parsedSnapshot.mapChunks)
+        val resourcesWithSize = unpackResources(parsedSnapshot.resources)
+        writeMaps(parsedSnapshot.editorMetadata, parsedSnapshot.mapChunks, resourcesWithSize)
     }
 
-    private def writeResources(resources: Seq[GzippedResourceData]): Unit = {
-        resources.foreach(
+    /**
+      * Dumps the contents of resource entities into files.
+      * Returns the resource id and corresponding name + size of each resource.
+      */
+    private def unpackResources(resources: Seq[GzippedResourceData]): Map[Int, TileResourceWithSize] = {
+        resources.map(
             resource => {
                 val xml = Gzipper.decompressToXml(resource.getGzippedTilesetFile.getBackingArray)
-                // todo: validate presence of these attributes instead of exploding on arbitrary data
-                val tilesetFile = new File(tilesetDir + "/" + xml.attribute("name").get.text + ".tsx")
+                val name = xml.attribute("name").get.text + ".tsx"
+                val size = xml.attribute("tilecount").get.text.toInt
+                val tilesetFile = new File(tilesetDir + "/" + name)
                 val imgFile = new File(imgDir + "/" + (xml \\ "image").head.attribute("source").get.text.split("/").last)
                 Gzipper.decompressToFile(resource.getGzippedTilesetFile.getBackingArray, tilesetFile)
                 println(s"Saved ${tilesetFile.getPath}")
                 Gzipper.decompressToFile(resource.getGzippedSourceImagePng.getBackingArray, imgFile)
                 println(s"Saved ${imgFile.getPath}")
+                (resource.getResourceId, TileResourceWithSize(name, size))
             }
-        )
+        ).toMap
     }
 
     private def writeMaps(editorMetadata: Map[String, Elem],
-                          mapChunks: Map[String, Set[MapChunkEntity]]): Unit = {
+                          mapChunks: Map[String, Set[MapChunkEntity]],
+                          resourcesWithSize: Map[Int, TileResourceWithSize]): Unit = {
         editorMetadata.foreach(f => {
             val name = f._1
-            mapChunks.get(f._1) match {
+            mapChunks.get(name) match {
                 case Some(chunkEntities) =>
                     val mapData = MapData.fromChunks(f._2, chunkEntities.toSeq)
-                    val mapFile = new File(mapDir + "/" + f._1)
-                    mapData.writeToFile(mapFile)
+                    val mapFile = new File(mapDir + "/" + name)
+                    mapData.writeToFile(mapFile, resourcesWithSize)
                     println(s"Saved ${mapFile.getPath}")
 
                 case None =>
-                    println(s"Map ${f._1} had metadata, but no associated chunk entities. Not generating a map file.")
+                    println(s"Map $name had metadata, but no associated chunk entities. Not generating a map file.")
             }
         })
     }
@@ -97,7 +104,10 @@ class TiledProjectGenerator(outputDir: String) {
 }
 
 object TiledProjectGenerator {
+
     case class ParsedSnapshot(resources: Seq[GzippedResourceData],
                               editorMetadata: Map[String, Elem],
                               mapChunks: Map[String, Set[MapChunkEntity]])
+
+    case class TileResourceWithSize(name: String, size: Int)
 }
