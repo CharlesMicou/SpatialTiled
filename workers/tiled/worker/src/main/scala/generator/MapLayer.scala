@@ -36,7 +36,7 @@ object MapLayer {
         val bottomRight = bottomRightPair._1 + makeCoordinates(
             TILE_X_DIMENSION * bottomRightPair._2.tileData.width,
             0,
-            TILE_Z_DIMENSION * bottomRightPair._2.tileData.height)
+            TILE_Z_DIMENSION - bottomRightPair._2.tileData.height)
 
         val width: Int = ((bottomRight.getX - topLeft.getX) / TILE_X_DIMENSION).toInt
         val height: Int = ((topLeft.getZ - bottomRight.getZ) / TILE_Z_DIMENSION).toInt
