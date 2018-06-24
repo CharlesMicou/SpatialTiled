@@ -5,12 +5,13 @@ import java.io.File
 import common.CoordinatesHelper._
 import common.GridMap
 import common.MagicConstants.{RESOURCE_COORDINATES, TILE_X_DIMENSION, TILE_Z_DIMENSION}
+import generator.TiledProjectGenerator.TileResourceWithSize
 import improbable._
 import improbable.worker.{Bytes, Entity}
 import tiled.map.{MapEditorMetadata, MapEditorMetadataData}
 import util.{Gzipper, XMLHelper}
 
-import scala.xml.{Elem, XML}
+import scala.xml._
 
 class MapData(name: String,
               width: Int,
@@ -63,13 +64,29 @@ class MapData(name: String,
         entity
     }
 
-    def writeToFile(file: File): Unit = {
-        // figure out the necessary dependencies and make a tileid -> gid function
+    def writeToFile(file: File, resourceIdToTileset: Map[Int, TileResourceWithSize]): Unit = {
+        // Figure out what our dependencies are/
+        val allUniqueTiles = layers.flatMap(layer => layer.tileData.data.values).toSet
+
+        val localTileResourceMapping = LocalTileResourceMapping
+          .makeForResources(allUniqueTiles, resourceIdToTileset)
+
+        val dependenciesAsXml = localTileResourceMapping.getDependenciesAndInitialIds.map {
+            f =>
+              //todo: remove this
+              val hackyPathToRemoveLater = "../tilesets/"
+              XMLHelper.makeElemWithAttributes(
+                  "tileset",
+                  Map("source" -> (hackyPathToRemoveLater + f._2), "firstgid" -> f._1.toString))
+        }
+
+        val layersAsXml = layers.map(layer => layer.toXml(localTileResourceMapping))
 
         // for each layer, write layer data as csv
+        // or... figure out the dependencies as you go?
 
         XML.save(file.getAbsolutePath,
-            metadata,
+            XMLHelper.addChildren(metadata, Seq(dependenciesAsXml, layersAsXml).flatten),
             "UTF-8",
             xmlDecl = true,
             doctype = null)
@@ -88,13 +105,13 @@ object MapData {
 
         // Iterate through layers, making the assumption that layers present
         // in one chunk are present in all chunks.
-        val mapLayers: Seq[MapLayer] = chunks.head.mapLayers.map(
+        val mapLayers: Seq[MapLayer] = chunks.head.mapLayers.map {
             mapLayer =>
-              MapLayer.merge(chunks.flatMap(chunk =>
-                  chunk.mapLayers
-                    .filter(layer => layer.id == mapLayer.id)
-                    .map(data => (chunk.coordinates, data))).toMap)
-        )
+                MapLayer.merge(chunks.flatMap(chunk =>
+                    chunk.mapLayers
+                      .filter(layer => layer.id == mapLayer.id)
+                      .map(data => (chunk.coordinates, data))).toMap)
+        }
 
         val width = mapLayers.head.tileData.width
         val height = mapLayers.head.tileData.height

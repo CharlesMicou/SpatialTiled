@@ -11,18 +11,19 @@ import util.Gzipper
 import scala.collection.JavaConversions._
 
 object ResourceEntity {
-    def makeResourceEntity(tilesetFile: File, imageFile: File): Entity = {
+    def makeResourceEntity(tilesetFile: File, imageFile: File, resourceId: Int): Entity = {
         val entity = new Entity
         entity.add(Metadata.COMPONENT, new MetadataData("TileResource"))
         entity.add(EntityAcl.COMPONENT, makeEntityAcl())
         entity.add(Persistence.COMPONENT, new PersistenceData())
         entity.add(Position.COMPONENT, new PositionData(RESOURCE_COORDINATES))
-        entity.add(GzippedResource.COMPONENT, makeGzippedResource(tilesetFile, imageFile))
+        entity.add(GzippedResource.COMPONENT, makeGzippedResource(tilesetFile, imageFile, resourceId))
         entity
     }
 
-    private def makeGzippedResource(tilesetFile: File, imageFile: File): GzippedResourceData = {
+    private def makeGzippedResource(tilesetFile: File, imageFile: File, resourceId: Int): GzippedResourceData = {
         val resource = GzippedResourceData.create()
+        resource.setResourceId(resourceId)
         val compressedTileset: Bytes = Bytes.fromBackingArray(Gzipper.compress(tilesetFile))
         val compressedImg: Bytes = Bytes.fromBackingArray(Gzipper.compress(imageFile))
         resource.setGzippedTilesetFile(compressedTileset)

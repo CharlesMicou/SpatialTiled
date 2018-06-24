@@ -1,6 +1,6 @@
 package util
 
-import scala.xml.{Elem, Node, XML}
+import scala.xml._
 import scala.xml.transform.{RewriteRule, RuleTransformer}
 
 object XMLHelper {
@@ -16,6 +16,25 @@ object XMLHelper {
     def stripLabels(xml: Elem, labels: Set[String]): Elem = {
         val f = new RuleTransformer(stripLabelRule(labels)).transform(xml)
         XML.loadString(f.toString())
+    }
+
+    def makeElemWithAttributes(elemName: String, attributes: Map[String, String]): Elem = {
+        val root = new Elem(null, elemName, Null, TopScope)
+        applyAttributeRecursively(root, attributes.toSeq)
+    }
+
+    def addChildren(original: Elem, newChildren: Seq[Elem]): Elem = {
+        original.copy(child = original.child ++ newChildren)
+    }
+
+    private def applyAttributeRecursively(root: Elem, attributes: Seq[(String, String)]): Elem = {
+        if (attributes.isEmpty) {
+            root
+        } else {
+            applyAttributeRecursively(
+                root % Attribute(None, attributes.head._1, Text(attributes.head._2), Null),
+                attributes.drop(1))
+        }
     }
 
     private def stripLabelRule(labels: Set[String]): RewriteRule = new RewriteRule {

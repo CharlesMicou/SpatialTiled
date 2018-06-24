@@ -72,6 +72,6 @@ object TileResourceDirectory {
         // todo use the relative path instead of stupid hacks
         val imgFile = new File(new File(file.getParent).getParent + "/" + MagicConstants.imgFolder + "/" + sourceImage)
 
-        (file.getName, tileResource, ResourceEntity.makeResourceEntity(file, imgFile))
+        (file.getName, tileResource, ResourceEntity.makeResourceEntity(file, imgFile, resourceId))
     }
 }
