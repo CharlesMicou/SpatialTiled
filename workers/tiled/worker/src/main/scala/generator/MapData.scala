@@ -67,7 +67,7 @@ class MapData(name: String,
     def writeToFile(file: File,
                     resourceIdToTileset: Map[Int, TileResourceWithSize],
                     tilesetPathPrefix: String): Unit = {
-        // Figure out what our dependencies are/
+        // Figure out what our dependencies are
         val allUniqueTiles = layers.flatMap(layer => layer.tileData.data.values).toSet
 
         val localTileResourceMapping = LocalTileResourceMapping
@@ -81,9 +81,6 @@ class MapData(name: String,
         }
 
         val layersAsXml = layers.map(layer => layer.toXml(localTileResourceMapping))
-
-        // for each layer, write layer data as csv
-        // or... figure out the dependencies as you go?
 
         XML.save(file.getAbsolutePath,
             XMLHelper.addChildren(metadata, Seq(dependenciesAsXml, layersAsXml).flatten),
