@@ -20,8 +20,7 @@ I'll fix this up to take better args soon, I promise.
 
 ## Generating a map from snapshot files
 
-Run `spatial local worker launch TiledWorker toMaps` to get a `NotImplementedError` exception.
-
+Run `spatial local worker launch TiledWorker toMaps` to generate a tiled project from `snapshots/test_world.snapshot` and saved to `worlds/generated_world`.
 
 ## Tiled Project Structure
 

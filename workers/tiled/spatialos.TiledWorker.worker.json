@@ -31,7 +31,8 @@
           "-jar",
           "TiledWorker.jar",
           "toSnapshot",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/test_world",
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot"
         ]
       },
       "windows": {
@@ -42,7 +43,8 @@
           "-jar",
           "TiledWorker.jar",
           "toSnapshot",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/test_world",
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot"
         ]
       },
       "macos": {
@@ -53,7 +55,8 @@
           "-jar",
           "TiledWorker.jar",
           "toSnapshot",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/test_world",
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot"
         ]
       }
     },
@@ -67,7 +70,8 @@
           "-jar",
           "TiledWorker.jar",
           "toMaps",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot",
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/generated_world"
         ]
       },
       "windows": {
@@ -78,7 +82,8 @@
           "-jar",
           "TiledWorker.jar",
           "toMaps",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot",
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/generated_world"
         ]
       },
       "macos": {
@@ -89,7 +94,8 @@
           "-jar",
           "TiledWorker.jar",
           "toMaps",
-          "${IMPROBABLE_PROJECT_ROOT}"
+          "${IMPROBABLE_PROJECT_ROOT}/snapshots/test_world.snapshot",
+          "${IMPROBABLE_PROJECT_ROOT}/worlds/generated_world"
         ]
       }
     }

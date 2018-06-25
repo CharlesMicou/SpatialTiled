@@ -69,7 +69,7 @@ object TileResourceDirectory {
             new LocalResource(tilesetFileName, sourceImage))
         tileResource.setRemoteResource(new RemoteResource(entityId))
 
-        // todo use the relative path instead of stupid hacks
+        // todo use the relative path instead of hacks
         val imgFile = new File(new File(file.getParent).getParent + "/" + MagicConstants.imgFolder + "/" + sourceImage)
 
         (file.getName, tileResource, ResourceEntity.makeResourceEntity(file, imgFile, resourceId))

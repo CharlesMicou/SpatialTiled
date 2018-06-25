@@ -7,8 +7,8 @@ object Launcher extends App {
     private val usageMsg: String = {
         "==== Usage ====\n" +
         "-- Snapshot generation --\n" +
-        "To generate a snapshot: \"toSnapshot /path/to/project\"\n" +
-        "To modify an existing snapshot: \"toSnapshot /path/to/project /path/to/snapshot.snapshot\"\n" +
+        "To generate a snapshot: \"toSnapshot /path/to/world /path/to/output.snapshot\"\n" +
+        "To modify an existing snapshot: \"toSnapshot /path/to/world /path/to/output.snapshot /path/to/input.snapshot\"\n" +
         "-- Map generation --\n" +
         "To generate maps from a snapshot: \"toMaps /path/to/snapshot.snapshot /path/to/output\""
     }
@@ -33,11 +33,11 @@ object Launcher extends App {
     private def parseArgs: Any = {
         args(0) match {
             case "toSnapshot" =>
-                val resourcePath = args(1) + "/worlds/test_world"
-                val outputFile = args(1) + "/snapshots/test_world.snapshot"
-                if (args.length == 3) {
+                val resourcePath = args(1)
+                val outputFile = args(2)
+                if (args.length == 4) {
                     // this could be better...
-                    val existingSnapshot = args(2)
+                    val existingSnapshot = args(3)
                     GenerateSnapshotConfig(resourcePath, outputFile, Some(existingSnapshot))
                 } else {
                     GenerateSnapshotConfig(resourcePath, outputFile, Option.empty)

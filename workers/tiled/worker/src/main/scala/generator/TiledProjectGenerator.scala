@@ -55,7 +55,7 @@ class TiledProjectGenerator(outputDir: String) {
                 case Some(chunkEntities) =>
                     val mapData = MapData.fromChunks(f._2, chunkEntities.toSeq)
                     val mapFile = new File(mapDir + "/" + name)
-                    mapData.writeToFile(mapFile, resourcesWithSize)
+                    mapData.writeToFile(mapFile, resourcesWithSize, "../" + MagicConstants.tilesetFolder + "/")
                     println(s"Saved ${mapFile.getPath}")
 
                 case None =>

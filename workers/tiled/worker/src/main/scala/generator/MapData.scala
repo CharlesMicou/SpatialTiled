@@ -64,7 +64,9 @@ class MapData(name: String,
         entity
     }
 
-    def writeToFile(file: File, resourceIdToTileset: Map[Int, TileResourceWithSize]): Unit = {
+    def writeToFile(file: File,
+                    resourceIdToTileset: Map[Int, TileResourceWithSize],
+                    tilesetPathPrefix: String): Unit = {
         // Figure out what our dependencies are/
         val allUniqueTiles = layers.flatMap(layer => layer.tileData.data.values).toSet
 
@@ -73,11 +75,9 @@ class MapData(name: String,
 
         val dependenciesAsXml = localTileResourceMapping.getDependenciesAndInitialIds.map {
             f =>
-              //todo: remove this
-              val hackyPathToRemoveLater = "../tilesets/"
               XMLHelper.makeElemWithAttributes(
                   "tileset",
-                  Map("source" -> (hackyPathToRemoveLater + f._2), "firstgid" -> f._1.toString))
+                  Map("source" -> (tilesetPathPrefix + f._2), "firstgid" -> f._1.toString))
         }
 
         val layersAsXml = layers.map(layer => layer.toXml(localTileResourceMapping))
