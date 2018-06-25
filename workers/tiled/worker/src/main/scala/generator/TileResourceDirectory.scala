@@ -59,14 +59,14 @@ object TileResourceDirectory {
     private def tsxToResource(file: File, resourceId: Int, entityId: Long): (String, TileResource, Entity) = {
         val tileResource = TileResource.create()
         tileResource.setResourceId(resourceId)
-        // Todo: decide between local and remote resources.
-        // For now, just assume resources are both local and remote.
+        // For now, all resources are remote until I figure out a nice way to declare
+        // dependencies on local resources for snapshot regeneration
         val tilesetFileName = file.getName.split("/").last
+        println(s"Loaded $tilesetFileName into tileset resources.")
         val sourceImage = (XML.loadFile(file) \\ "image")
           .map(node => node.attribute("source").get.text.split("/").last)
           .headOption.getOrElse("")
-        tileResource.setLocalResource(
-            new LocalResource(tilesetFileName, sourceImage))
+        // tileResource.setLocalResource(new LocalResource(tilesetFileName, sourceImage))
         tileResource.setRemoteResource(new RemoteResource(entityId))
 
         // todo use the relative path instead of hacks

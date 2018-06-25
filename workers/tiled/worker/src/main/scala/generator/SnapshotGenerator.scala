@@ -17,6 +17,7 @@ class SnapshotGenerator(resourcePath: String) {
 
         var lastEntityId: Long = fromSnapshot match {
             case Some(existingSnapshot) =>
+                println(s"Filtering existing snapshot $existingSnapshot")
                 val snapshotInputStream = new SnapshotInputStream(existingSnapshot)
                 val offset = SnapshotFilter.removeEntitiesWithComponents(
                     snapshotInputStream, snapshotOutputStream, SnapshotGenerator.filteredComponents)
@@ -36,6 +37,7 @@ class SnapshotGenerator(resourcePath: String) {
         val maps: Seq[MapData] = loadMapDirectory(
             resourcePath + "/" + MagicConstants.mapFolder, tileResource)
 
+        println("Writing to snapshot.")
         writeMapEntities(snapshotOutputStream, lastEntityId, maps, tileResource)
         snapshotOutputStream.close()
     }

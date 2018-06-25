@@ -15,13 +15,13 @@ object Launcher extends App {
 
     parseArgs match {
         case toSnapshot: GenerateSnapshotConfig =>
+            println(s"Generating snapshot: ${toSnapshot.outputFile}.")
             val snapshotGenerator = new SnapshotGenerator(toSnapshot.resourcePath)
-            println("Starting snapshot generation.")
             snapshotGenerator.generateSnapshot(toSnapshot.outputFile, toSnapshot.existingSnapshot)
 
         case toMaps: GenerateMapsConfig =>
+            println(s"Generating tiled project: ${toMaps.outputResourceDir}")
             val tiledProjectGenerator = new TiledProjectGenerator(toMaps.outputResourceDir)
-            println("Starting map file extraction.")
             tiledProjectGenerator.loadFromSnapshot(toMaps.inputFile)
 
         case _ =>

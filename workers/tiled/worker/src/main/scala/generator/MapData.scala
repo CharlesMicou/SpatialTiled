@@ -121,6 +121,7 @@ object MapData {
 
     def fromFile(file: File, tileResourceDirectory: TileResourceDirectory): MapData = {
         assert(file.getName.endsWith(".tmx"), s"File $file is not a .tmx file")
+        println(s"Loading ${file.getName}.")
         val mapName = file.getName
         val xml = XML.loadFile(file)
         val width = xml.attribute("width").get.text.toInt
