@@ -12,6 +12,7 @@ dependencies {
     compile project(':worker-sdk')
     compile 'org.scala-lang:scala-library:2.12.6'
     compile group: 'org.scala-lang.modules', name: 'scala-xml_2.12', version: '1.1.0'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
     testCompile "junit:junit:4.11"
     testCompile 'org.scalatest:scalatest_2.12:3.0.5'
 }

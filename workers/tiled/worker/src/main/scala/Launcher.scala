@@ -1,4 +1,5 @@
 import generator.{SnapshotGenerator, TiledProjectGenerator}
+import util.FileHelper
 
 object Launcher extends App {
     private case class GenerateSnapshotConfig(resourcePath: String, outputFile: String, existingSnapshot: Option[String])
@@ -20,6 +21,7 @@ object Launcher extends App {
             snapshotGenerator.generateSnapshot(toSnapshot.outputFile, toSnapshot.existingSnapshot)
 
         case toMaps: GenerateMapsConfig =>
+            FileHelper.deleteDirectoryIfExists(toMaps.outputResourceDir)
             println(s"Generating tiled project: ${toMaps.outputResourceDir}")
             val tiledProjectGenerator = new TiledProjectGenerator(toMaps.outputResourceDir)
             tiledProjectGenerator.loadFromSnapshot(toMaps.inputFile)
