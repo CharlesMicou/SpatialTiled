@@ -6,6 +6,9 @@
  <tileset firstgid="1" source="../tilesets/autumn.tsx"/>
  <tileset firstgid="15" source="../tilesets/spring.tsx"/>
  <layer id="3" name="background" width="20" height="10">
+  <properties>
+   <property name="render_depth" type="int" value="0"/>
+  </properties>
   <data encoding="csv">
 2,6,13,6,9,1,1,1,1,1,1,1,1,1,1,13,13,13,1,1,
 9,10,6,8,1,1,1,9,1,6,2,9,1,1,13,11,12,10,13,1,
@@ -20,6 +23,9 @@
 </data>
  </layer>
  <layer id="2" name="foreground" width="20" height="10" locked="1">
+  <properties>
+   <property name="render_depth" type="int" value="1"/>
+  </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,5,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
