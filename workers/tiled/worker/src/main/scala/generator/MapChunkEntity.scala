@@ -56,6 +56,8 @@ class MapChunkEntity(val name: String,
             tileLayer.setName(layer.name)
             tileLayer.setTiles(layer.tileData.toRaw)
             tileLayer.setId(layer.id)
+            tileLayer.setRenderingProperties(layer.properties.renderingLayerProperties.toSchema)
+            tileLayer.setGameplayProperties(layer.properties.gameplayLayerProperties.toSchema)
             tileLayer
         }
     }
@@ -87,6 +89,8 @@ object MapChunkEntity {
                     tileLayer.getId,
                     GridMap.fromRaw(tileLayer.getTiles,
                         data.getProperties.getWidth,
-                        data.getProperties.getHeight))))
+                        data.getProperties.getHeight),
+                    LayerProperties.fromSchema(tileLayer.getRenderingProperties,
+                        tileLayer.getGameplayProperties))))
     }
 }

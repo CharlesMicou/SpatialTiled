@@ -27,6 +27,21 @@ object XMLHelper {
         original.copy(child = original.child ++ newChildren)
     }
 
+    def booleanToXMLValue(x: Boolean): String = {
+        if (x) {
+            "true"
+        } else {
+            "false"
+        }
+    }
+
+    def xmlValueToBoolean(x: String): Boolean = {
+        x match {
+            case "true" => true
+            case "false" => false
+        }
+    }
+
     private def applyAttributeRecursively(root: Elem, attributes: Seq[(String, String)]): Elem = {
         if (attributes.isEmpty) {
             root

@@ -41,7 +41,7 @@ class MapData(name: String,
             val zUpper = Math.min((j + 1) * maxChunkHeight, height)
             val chunkedMapLayers: Seq[MapLayer] = layers.map {
                 layer =>
-                    MapLayer(layer.name, layer.id, layer.tileData.subSection(xLower, zLower, xUpper, zUpper))
+                    MapLayer(layer.name, layer.id, layer.tileData.subSection(xLower, zLower, xUpper, zUpper), layer.properties)
             }
             new MapChunkEntity(
                 name,
@@ -152,7 +152,7 @@ object MapData {
                                   tileResourceDirectory.tileIdFromMapFileMapping(csvEntry.toInt, localResourceMapping)
                           }
                 }
-              MapLayer(name, id, GridMap.fromRowsAndCols(data))
+              MapLayer(name, id, GridMap.fromRowsAndCols(data), LayerProperties.fromXML(layer \ "properties"))
           })
 
         val metadata = XMLHelper.stripLabels(xml, Set("layer", "tileset", "objectgroup"))
