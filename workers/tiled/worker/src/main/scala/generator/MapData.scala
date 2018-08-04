@@ -152,7 +152,7 @@ object MapData {
                                   tileResourceDirectory.tileIdFromMapFileMapping(csvEntry.toInt, localResourceMapping)
                           }
                 }
-              MapLayer(name, id, GridMap.fromRowsAndCols(data), LayerProperties.fromXML(layer \ "properties"))
+              MapLayer(name, id, GridMap.fromRowsAndCols(data), LayerProperties.fromXML(layer \\ "properties"))
           })
 
         val metadata = XMLHelper.stripLabels(xml, Set("layer", "tileset", "objectgroup"))

@@ -20,7 +20,7 @@ case class LayerProperties(renderingLayerProperties: RenderingLayerProperties,
 case class RenderingLayerProperties(hideLayer: Boolean, renderDepth: Int) {
     def toXML: Seq[Elem] = {
         Seq(<property name="hide_layer" value={XMLHelper.booleanToXMLValue(hideLayer)} type="bool"/>,
-            <property name ="render_depth" value={renderDepth.toString} type="int"/>)
+                <property name="render_depth" value={renderDepth.toString} type="int"/>)
     }
 
     def toSchema: LayerRenderingProperties = {
@@ -49,21 +49,21 @@ object LayerProperties {
     private val defaultDummy = true
 
     def fromXML(xml: NodeSeq): LayerProperties = {
+        val properties = xml \\ "property"
+
+        // This is horribly ugly, but until there's a decision on what should actually
+        // go into layer properties and how it exists in schema, I'm not going to
+        // spend time making it better.
         var hide = defaultHide
         var depth = defaultDepth
         var dummy = defaultDummy
-        xml.foreach {
-            case node@(a: Node) if node.attributes.get("hide_layer").isDefined =>
-                hide = XMLHelper.xmlValueToBoolean(a.attributes.get("value").get.text)
+        val mapped = properties.map(property =>
+            (property.attributes.get("name").get.text, property.attributes.get("value").get.text))
+          .toMap
+        mapped.get("hide_layer").foreach(a => hide = XMLHelper.xmlValueToBoolean(a))
+        mapped.get("dummy_field").foreach(a => dummy = XMLHelper.xmlValueToBoolean(a))
+        mapped.get("render_depth").foreach(a => depth = a.toInt)
 
-            case node@(a: Node) if node.attributes.get("render_depth").isDefined =>
-                depth = a.attributes.get("value").get.text.toInt
-
-            case node@(a: Node) if node.attributes.get("dummy_field").isDefined =>
-                dummy= XMLHelper.xmlValueToBoolean(a.attributes.get("value").get.text)
-
-            case _ =>
-        }
         LayerProperties(RenderingLayerProperties(hide, depth),
             GameplayLayerProperties(dummy))
     }

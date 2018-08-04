@@ -7,6 +7,7 @@
  <tileset firstgid="15" source="../tilesets/spring.tsx"/>
  <layer id="3" name="background" width="20" height="10">
   <properties>
+   <property name="dummy_field" type="bool" value="true"/>
    <property name="render_depth" type="int" value="0"/>
   </properties>
   <data encoding="csv">
