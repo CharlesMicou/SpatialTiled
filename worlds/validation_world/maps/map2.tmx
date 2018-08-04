@@ -5,6 +5,9 @@
  </properties>
  <tileset firstgid="1" source="../tilesets/tileset1.tsx"/>
  <layer id="1" name="Tile Layer 1" width="15" height="20">
+  <properties>
+   <property name="placeholder_bool_prop" type="bool" value="true"/>
+  </properties>
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,

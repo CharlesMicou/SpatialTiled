@@ -60,8 +60,8 @@ type TileId {
 }
 
 type LayerRenderingProperties {
-    // Visibility of the layer. If false, do not render.
-    bool visible = 1;
+    // Controls visibility of the layer. Default or false means the layer is visible.
+    bool hide_layer = 1;
 
     // The render depth of this layer.
     // Bigger values should be rendered in front of smaller values.
