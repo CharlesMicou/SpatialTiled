@@ -8,7 +8,7 @@ import util.XMLHelper
 
 import scala.xml.Elem
 
-case class MapLayer(name: String, id: Int, tileData: GridMap) {
+case class MapLayer(name: String, id: Int, tileData: GridMap, properties: LayerProperties) {
     def toXml(localTileResourceMapping: LocalTileResourceMapping): Elem = {
         val root = XMLHelper.makeElemWithAttributes("layer", Map(
             "id" -> id.toString,
@@ -18,10 +18,7 @@ case class MapLayer(name: String, id: Int, tileData: GridMap) {
         val data = <data encoding="csv">
             {tileData.toRaw.map(tileId => localTileResourceMapping.getLocalId(tileId)).mkString(",")}
         </data>
-        val properties = <properties>
-            <property name="placeholder_property" type="int" value="1337"/>
-        </properties>
-        XMLHelper.addChildren(root, Seq(data, properties))
+        XMLHelper.addChildren(root, Seq(data, properties.toXML))
     }
 }
 
@@ -30,6 +27,7 @@ object MapLayer {
     def merge(parts: Map[Coordinates, MapLayer]): MapLayer = {
         val name = parts.head._2.name
         val id = parts.head._2.id
+        val properties = parts.head._2.properties
 
         val topLeft = parts.keys.toSeq.sortWith((c1, c2) => c1.isTopLeftOf(c2)).head
         val bottomRightPair = parts.toSeq.sortWith((f1, f2) => f1._1.isBottomRightOf(f2._1)).head
@@ -53,6 +51,6 @@ object MapLayer {
         })
 
         // All parts should agree on layer name and ID
-        MapLayer(name, id, new GridMap(mergedGridData, width, height))
+        MapLayer(name, id, new GridMap(mergedGridData, width, height), properties)
     }
 }

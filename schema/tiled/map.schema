@@ -41,6 +41,12 @@ type TileLayer {
 
     // The ID of this tile layer.
     uint32 id = 3;
+
+    // The rendering properties of this layer.
+    LayerRenderingProperties rendering_properties = 4;
+
+    // The gameplay properties of this layer.
+    LayerGameplayProperties gameplay_properties = 5;
 }
 
 // A unique identifier for a single tile.
@@ -51,6 +57,23 @@ type TileId {
 
     // The id of the tile within the resource.
     uint32 inner_id = 2;
+}
+
+type LayerRenderingProperties {
+    // Controls visibility of the layer. Default or false means the layer is visible.
+    bool hide_layer = 1;
+
+    // The render depth of this layer.
+    // Bigger values should be rendered in front of smaller values.
+    // Note(charlie): while this is technically a z-depth, the current SpatialOS
+    // coordinate system means our map is in the x-z plane rather than the x-y plane.
+    // This is named render depth to avoid confusion.
+    uint32 render_depth = 2;
+}
+
+type LayerGameplayProperties {
+    // todo
+    bool collisions = 1;
 }
 
 component MapEditorMetadata {

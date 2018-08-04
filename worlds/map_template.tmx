@@ -4,6 +4,9 @@
   <property name="coordinate_offset" value="0.0, 0.0, 0.0"/>
  </properties>
  <layer id="1" name="Tile Layer 1" width="20" height="15">
+  <properties>
+   <property name="render_depth" type="int" value="0"/>
+  </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

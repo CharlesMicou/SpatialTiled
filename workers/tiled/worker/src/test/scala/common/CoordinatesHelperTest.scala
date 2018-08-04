@@ -4,7 +4,6 @@ import base.BaseTest
 import CoordinatesHelper._
 
 class CoordinatesHelperTest extends BaseTest {
-
     private val coords1 = makeCoordinates(0, 0, 0)
     private val coords2 = makeCoordinates(0, 0, 1)
     private val coords3 = makeCoordinates(1, 0, 0)
